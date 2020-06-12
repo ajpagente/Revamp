@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "revamp",
+    products: [
+        .executable(name: "revamp", targets: ["revamp"]),
+        .library(name: "Library", targets: ["Library"]),
+    ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.1.0"),
@@ -14,9 +18,13 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "revamp",
-            dependencies: [.product(name: "ArgumentParser", package: "swift-argument-parser"),]),
+            dependencies: [.product(name: "ArgumentParser", package: "swift-argument-parser"),
+                            "Library"]),
+        .target(
+            name: "Library",
+            dependencies: []),
         .testTarget(
             name: "revampTests",
-            dependencies: ["revamp"]),
+            dependencies: ["Library"]),
     ]
 )
