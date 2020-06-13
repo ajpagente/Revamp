@@ -4,14 +4,16 @@
 *  MIT license, see LICENSE file for details
 */
 
+import Foundation
+
 public enum CommmandError: Error {
     case unknownCommand
     case argumentError
 } 
 
 public struct CommandSuccessInfo {
-    var simpleOutput: String
-    var verboseOuput: String 
+    var simpleOutput: [String] = []
+    var verboseOuput: [String] = []
 }
 
 public struct CommandErrorReason {
@@ -20,12 +22,12 @@ public struct CommandErrorReason {
 
 public protocol Command {
     var errorReason: CommandErrorReason? { get }
-    var successInfo: CommandSuccessInfo? { get }
+    var successInfo: CommandSuccessInfo?  { get }
     var arguments:   [String: String]    { get set }
 
     func isArgumentValid() -> Bool
     func isSuccessful() -> Bool
-    func execute() -> Bool
+    mutating func execute() -> Bool
 }
 
 public struct CommandDispatcher  {
@@ -36,9 +38,24 @@ public struct CommandDispatcher  {
 
         switch lowercaseName {
             case "list":
-                command = ListCommand(arguments: arguments)
-                if let unwrapped = command {
-                    unwrapped.execute()
+                if arguments["target"]!.lowercased() == "profile" {
+                    let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
+                    let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
+
+                    command = ListCommand(arguments: arguments, path: profileURL)
+                } else {
+                    command = ListCommand(arguments: arguments)
+                }
+
+                
+                if var unwrapped = command {
+                    let status = unwrapped.execute()
+                    if status {
+                        for output in unwrapped.successInfo!.simpleOutput {
+                            print(output)
+                        }
+                        
+                    }
                 }
             default:
                 print("Unknown command")
