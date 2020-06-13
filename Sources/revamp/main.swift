@@ -1,32 +1,25 @@
+/**
+*  Revamp
+*  Copyright (c) Alvin John Pagente 2020
+*  MIT license, see LICENSE file for details
+*/
+
 import ArgumentParser
 import Foundation
 import Library
+import Command
 
 struct Revamp: ParsableCommand {
-    @Argument() var files: [String]
+    @Argument() var arguments: [String]
+
+    @Option(name: [.short, .customLong("target")], help: "The item to list. Accepts: profile, certificate") 
+    var target: String
 
     mutating func run() throws {
         
-        // guard #available(macOS 10.12, *) else {
-        //     print("This application requires macOS 10.12 or newer")
-        //     return
-        // }
+        let commandString = arguments[0]
 
-        let fileManager = FileManager.default
-        let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-        let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
-        
-        let urls = try fileManager.contentsOfDirectory(at: profileURL, 
-                                                           includingPropertiesForKeys: [],
-                                                           options: [ .skipsSubdirectoryDescendants,
-                                                                      .skipsHiddenFiles ] )
-
-        for url in urls {
-            if let data = try? Data(contentsOf: url) {
-                let profile = try ProvisioningProfile.parse(from: data)
-                print(profile!.UUID)     
-            }  
-        }
+        let command = CommandDispatcher.handleCommand(commandString, with: ["target": target])
     }
 }
 

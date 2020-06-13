@@ -8,6 +8,7 @@ let package = Package(
     products: [
         .executable(name: "revamp", targets: ["revamp"]),
         .library(name: "Library", targets: ["Library"]),
+        .library(name: "Command", targets: ["Command"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -19,9 +20,12 @@ let package = Package(
         .target(
             name: "revamp",
             dependencies: [.product(name: "ArgumentParser", package: "swift-argument-parser"),
-                            "Library"]),
+                            "Library", "Command"]),
         .target(
             name: "Library",
+            dependencies: []),
+        .target(
+            name: "Command",
             dependencies: []),
         .testTarget(
             name: "revampTests",
