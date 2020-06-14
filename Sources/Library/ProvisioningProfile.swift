@@ -23,6 +23,8 @@ public struct ProvisioningProfile: Codable {
         case timeToLive                    = "TimeToLive"
         case UUID                          = "UUID"
         case version                       = "Version"
+
+        // TODO: Add isXCodeManaged?
     }
 
     public var appIDName:                     String

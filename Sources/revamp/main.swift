@@ -15,11 +15,14 @@ struct Revamp: ParsableCommand {
     @Option(name: [.short, .customLong("target")], help: "The item to list. Accepts: profile, certificate") 
     var target: String
 
+    @Flag(name: .shortAndLong)
+    var verbose: Bool
+
     mutating func run() throws {
         
         let commandString = arguments[0]
 
-        let command = CommandDispatcher.handleCommand(commandString, with: ["target": target])
+        let command = CommandDispatcher.handleCommand(commandString, with: ["target": target, "verbose": String(verbose)])
     }
 }
 

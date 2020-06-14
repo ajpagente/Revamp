@@ -38,8 +38,8 @@ public struct ListCommand: Command {
             for url in urls {
                 if let data = try? Data(contentsOf: url) {
                     if let profile = try ProvisioningProfile.parse(from: data) {
-                        currentSuccessInfo.simpleOutput.append(profile.UUID)
-                        // print(profile.UUID)     
+                        currentSuccessInfo.simpleOutput.append(profile.simpleOutput)
+                        currentSuccessInfo.verboseOutput.append(profile.verboseOutput)
                      }
                 }  
             }

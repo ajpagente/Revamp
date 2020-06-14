@@ -26,7 +26,7 @@ let package = Package(
             dependencies: []),
         .target(
             name: "Command",
-            dependencies: []),
+            dependencies: ["Library"]),
         .testTarget(
             name: "revampTests",
             dependencies: ["Library"]),

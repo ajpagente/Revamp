@@ -13,7 +13,7 @@ public enum CommmandError: Error {
 
 public struct CommandSuccessInfo {
     var simpleOutput: [String] = []
-    var verboseOuput: [String] = []
+    var verboseOutput: [String] = []
 }
 
 public struct CommandErrorReason {
@@ -47,13 +47,21 @@ public struct CommandDispatcher  {
                     command = ListCommand(arguments: arguments)
                 }
 
+                let isVerbose = Bool(arguments["verbose"]!)
                 
                 if var unwrapped = command {
                     let status = unwrapped.execute()
                     if status {
-                        for output in unwrapped.successInfo!.simpleOutput {
-                            print(output)
+                        if isVerbose! {
+                            for output in unwrapped.successInfo!.verboseOutput {
+                                print(output + "\n")
+                            }
+                        } else {
+                            for output in unwrapped.successInfo!.simpleOutput {
+                                print(output)
+                            }
                         }
+                        
                         
                     }
                 }
