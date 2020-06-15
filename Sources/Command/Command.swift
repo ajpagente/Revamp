@@ -11,9 +11,14 @@ public enum CommmandError: Error {
     case argumentError
 } 
 
-public struct CommandSuccessInfo {
-    var simpleOutput: [String] = []
-    var verboseOutput: [String] = []
+public enum CommandOutputType {
+    case simple
+    case verbose
+}
+
+public struct CommandOutput {
+    var simple: [String] = []
+    var verbose: [String] = []
 }
 
 public struct CommandErrorReason {
@@ -21,55 +26,6 @@ public struct CommandErrorReason {
 }
 
 public protocol Command {
-    var errorReason: CommandErrorReason? { get }
-    var successInfo: CommandSuccessInfo?  { get }
-    var arguments:   [String: String]    { get set }
-
-    func isArgumentValid() -> Bool
-    func isSuccessful() -> Bool
+    func getOutput(_ type: CommandOutputType) -> [String]
     mutating func execute() -> Bool
-}
-
-public struct CommandDispatcher  {
-    let commandTable = ["list"]
-    public static func handleCommand(_ name: String, with arguments: [String: String]) -> Command? {
-        let lowercaseName = name.lowercased()
-        var command: Command?
-
-        switch lowercaseName {
-            case "list":
-                if arguments["target"]!.lowercased() == "profile" {
-                    let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-                    let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
-
-                    command = ListCommand(arguments: arguments, path: profileURL)
-                } else {
-                    command = ListCommand(arguments: arguments)
-                }
-
-                let isVerbose = Bool(arguments["verbose"]!)
-                
-                if var command = command {
-                    let status = command.execute()
-                    if status {
-                        if isVerbose! {
-                            for output in command.successInfo!.verboseOutput {
-                                print(output + "\n")
-                            }
-                        } else {
-                            for output in command.successInfo!.simpleOutput {
-                                print(output)
-                            }
-                        }
-                        
-                        
-                    }
-                }
-            default:
-                print("Unknown command")
-        }
-
-        return command
-    }
-    
 }

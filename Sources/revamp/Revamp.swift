@@ -13,19 +13,23 @@ struct Revamp: ParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "A utility for signing iOS apps and provides signing environment query capabilities.",
         subcommands: [List.self])
+
 }
 
+// TODO: Fix why this does not appear in help
 struct Options: ParsableArguments {
     @Flag(name: .shortAndLong, help: "Show more details in the output.")
     var verbose: Bool
 }
 
+
 extension Revamp {
     struct List: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Print provisioning profiles or signing certificates.",
             subcommands: [Profile.self])
-    }
-    
+        
+
+    }   
 }
 
 extension Revamp.List {
@@ -36,11 +40,25 @@ extension Revamp.List {
         var options: Options
 
         mutating func run() {
-            let command = CommandDispatcher.handleCommand("list", with: ["target": "profile", "verbose": String(options.verbose)])
+            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
+            let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
+
+            var command = ListCommand(path: profileURL)
+
+            let status = command.execute()
+            if status {
+                if options.verbose {
+                    for output in command.getOutput(.verbose) {
+                        print(output + "\n")
+                    }
+                } else {
+                    for output in command.getOutput(.simple) {
+                        print(output)
+                    }
+                }
+            }       
         }
     }
-
-
 }
 
 

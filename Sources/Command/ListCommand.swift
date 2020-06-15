@@ -8,29 +8,29 @@ import Foundation
 import Library
 
 public struct ListCommand: Command {
-    public var errorReason: CommandErrorReason?
-    public var successInfo: CommandSuccessInfo?
-    public var arguments:   [String: String]
-    public var path:        URL?  // TODO: make this a getter only
+    private var errorReason = CommandErrorReason(errorMessage: "")
+    private var output      = CommandOutput(simple: [], verbose: [])
+    private var path:        URL  
 
-    public func isArgumentValid() -> Bool {
-        return false
+    public init(path: URL) {
+        self.path = path
     }
-
-    public func isSuccessful() -> Bool {
-        return false
+    
+    public func getOutput(_ type: CommandOutputType) -> [String] {
+        switch type {
+            case .simple:
+                return output.simple
+            case .verbose:
+                return output.verbose
+        } 
+        return []
     }
 
     public mutating func execute() -> Bool {
         
-        var currentSuccessInfo = CommandSuccessInfo()
         do {
-            guard let profileURL = path else {
-                return false
-            }
-
             let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(at: profileURL, 
+            let urls = try fileManager.contentsOfDirectory(at: path, 
                                                            includingPropertiesForKeys: [],
                                                            options: [ .skipsSubdirectoryDescendants,
                                                                       .skipsHiddenFiles ] )
@@ -38,8 +38,8 @@ public struct ListCommand: Command {
             for url in urls {
                 if let data = try? Data(contentsOf: url) {
                     if let profile = try ProvisioningProfile.parse(from: data) {
-                        currentSuccessInfo.simpleOutput.append(profile.simpleOutput)
-                        currentSuccessInfo.verboseOutput.append(profile.verboseOutput)
+                        output.simple.append(profile.simpleOutput)
+                        output.verbose.append(profile.verboseOutput)
                      }
                 }  
             }
@@ -47,8 +47,6 @@ public struct ListCommand: Command {
             return false
         }
         
-        successInfo = currentSuccessInfo
         return true
-        
     }
 }
