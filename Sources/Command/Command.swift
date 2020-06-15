@@ -49,15 +49,15 @@ public struct CommandDispatcher  {
 
                 let isVerbose = Bool(arguments["verbose"]!)
                 
-                if var unwrapped = command {
-                    let status = unwrapped.execute()
+                if var command = command {
+                    let status = command.execute()
                     if status {
                         if isVerbose! {
-                            for output in unwrapped.successInfo!.verboseOutput {
+                            for output in command.successInfo!.verboseOutput {
                                 print(output + "\n")
                             }
                         } else {
-                            for output in unwrapped.successInfo!.simpleOutput {
+                            for output in command.successInfo!.simpleOutput {
                                 print(output)
                             }
                         }
