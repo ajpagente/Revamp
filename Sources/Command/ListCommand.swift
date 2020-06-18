@@ -8,7 +8,7 @@ import Foundation
 import Library
 
 public struct ListCommand: Command {
-    private var errorReason = CommandErrorReason(errorMessage: "")
+    private var errorReason = CommandErrorReason(simple: [])
     private var output      = CommandOutput(simple: [], verbose: [])
     private var path:        URL  
 
@@ -16,6 +16,10 @@ public struct ListCommand: Command {
         self.path = path
     }
     
+    public func getError() -> [String] {
+        return errorReason.simple
+    }
+
     public func getOutput(_ type: CommandOutputType) -> [String] {
         switch type {
             case .simple:
@@ -23,7 +27,6 @@ public struct ListCommand: Command {
             case .verbose:
                 return output.verbose
         } 
-        return []
     }
 
     public mutating func execute() -> Bool {

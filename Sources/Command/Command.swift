@@ -22,10 +22,11 @@ public struct CommandOutput {
 }
 
 public struct CommandErrorReason {
-    public var errorMessage: String
+    var simple: [String] = []
 }
 
 public protocol Command {
     func getOutput(_ type: CommandOutputType) -> [String]
+    func getError() -> [String]
     mutating func execute() -> Bool
 }
