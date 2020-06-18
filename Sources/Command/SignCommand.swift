@@ -32,7 +32,7 @@ public struct SignCommand: Command {
 
     public mutating func execute() -> Bool {
         let tempDirectoryURL  = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        let tempExtractionURL = tempDirectoryURL.appendingPathComponent("ipa-extract")
+        var tempExtractionURL: URL?
 
         let file = arguments["file"]!
         let fileManager = FileManager.default
@@ -40,13 +40,13 @@ public struct SignCommand: Command {
         let ipaURL = URL(fileURLWithPath: file, isDirectory: false)
 
         do {
-            try createDirectory(at: tempExtractionURL.path)
+            tempExtractionURL = try fileManager.createTemporaryDirectory(atPath: "ipa-extract")
 
-            let unzipOutput = Process().execute("/usr/bin/unzip", arguments: ["-q",ipaURL.path,"-d",tempExtractionURL.path])
+            let unzipOutput = Process().execute("/usr/bin/unzip", arguments: ["-q",ipaURL.path,"-d",tempExtractionURL!.path])
             // TODO: Error handling
 
             let resourceKeys = Set<URLResourceKey>([.nameKey, .isDirectoryKey])
-            let directoryEnumerator = fileManager.enumerator(at: tempExtractionURL, includingPropertiesForKeys: Array(resourceKeys), options: .skipsHiddenFiles)!
+            let directoryEnumerator = fileManager.enumerator(at: tempExtractionURL!, includingPropertiesForKeys: Array(resourceKeys), options: .skipsHiddenFiles)!
             
             for case let fileURL as URL in directoryEnumerator {
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
@@ -68,25 +68,19 @@ public struct SignCommand: Command {
             return false
         }
 
-        let tempPayloadURL = tempExtractionURL.appendingPathComponent("Payload")
-        let tempAppURL     = tempPayloadURL.appendingPathComponent(appName)
+        if let tempExtractionURL = tempExtractionURL {
+            let tempPayloadURL = tempExtractionURL.appendingPathComponent("Payload")
+            let tempAppURL     = tempPayloadURL.appendingPathComponent(appName)
 
-        let simpleOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=2","-d",tempAppURL.path])
-        self.output.simple.append(simpleOutput.output)
+            let simpleOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=2","-d",tempAppURL.path])
+            self.output.simple.append(simpleOutput.output)
 
-        let verboseOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=4","-d",tempAppURL.path])
-        self.output.verbose.append(verboseOutput.output)
+            let verboseOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=4","-d",tempAppURL.path])
+            self.output.verbose.append(verboseOutput.output)
 
-        return true
-    }
+            return true
+        } 
 
-    private func createDirectory(at path: String) throws {
-        let fileManager = FileManager.default
-
-        if fileManager.fileExists(atPath: path) {
-            try fileManager.removeItem(atPath: path)
-        }
-
-        try fileManager.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        return false
     }
 }

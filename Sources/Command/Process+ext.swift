@@ -1,19 +1,25 @@
+/**
+*  Revamp
+*  Copyright (c) Alvin John Pagente 2020
+*  MIT license, see LICENSE file for details
+*/
+
 import Foundation
+
 struct ProcessOutput {
-    var output: String
     var status: Int32
-    init(status: Int32, output: String){
-        self.status = status
-        self.output = output
-    }
+    var output: String
 }
+
 extension Process {
     func launchSynchronous() -> ProcessOutput {
-        self.standardInput = FileHandle.nullDevice
         let pipe = Pipe()
         self.standardOutput = pipe
-        self.standardError = pipe
+        self.standardError  = pipe
+        self.standardInput  = FileHandle.nullDevice
+
         let pipeFile = pipe.fileHandleForReading
+        
         self.launch()
         
         let data = NSMutableData()
@@ -28,16 +34,14 @@ extension Process {
             return ProcessOutput(status: self.terminationStatus, output: output)
         } else {
             return ProcessOutput(status: self.terminationStatus, output: "")
-        }
-        
+        }        
     }
     
-    func execute(_ launchPath: String, arguments: [String]?)->ProcessOutput{
+    func execute(_ launchPath: String, arguments: [String]?) -> ProcessOutput {
         self.launchPath = launchPath
         if arguments != nil {
             self.arguments = arguments
         }
         return self.launchSynchronous()
     }
-    
 }
