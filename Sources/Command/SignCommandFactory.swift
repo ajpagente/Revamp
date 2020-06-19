@@ -12,9 +12,9 @@ public struct SignCommandFactory {
 
         switch subcommandName {
         case "display":
-            signCommand = SignCommand(with: arguments)
+            signCommand = SignCommand(.display, with: arguments)
         default:
-            signCommand = SignCommand(with: arguments)
+            signCommand = SignCommand(.display, with: arguments)
         }
 
         return signCommand

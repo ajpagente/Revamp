@@ -10,13 +10,20 @@ import Library
 public struct SignCommand: Command {
     private var errorReason = CommandErrorReason(simple: [])
     private var output      = CommandOutput(simple: [], verbose: [])
-    private var arguments: [String:String] = [:]  
+    private var arguments   = ["":""]  
     private var appName     = ""
+    private let subCommand: SubCommand
 
-    public init(with arguments: [String:String]) {
-        self.arguments = arguments
+    public init(_ subCommand: SubCommand, with arguments: [String:String]) {
+        self.subCommand = subCommand
+        self.arguments  = arguments
     }
     
+    public enum SubCommand {
+        case display
+        case verify
+    }
+
     public func getError() -> [String] {
         return errorReason.simple
     }
