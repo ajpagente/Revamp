@@ -43,10 +43,8 @@ extension Revamp.List {
         var options: Options
 
         mutating func run() {
-            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-            let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
-
-            var command = ListCommand(path: profileURL)
+            let commandFactory = CommandFactory()
+            var command = commandFactory.createCommand("list", withSubCommand: "profile", arguments: ["":""])
 
             let status = command.execute()
             if status {
@@ -75,10 +73,8 @@ extension Revamp.Sign {
         var file: String
 
         mutating func run() {
-            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-            let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
-
-            var command = SignCommand(with: ["subcommand":"display", "file": file])
+            let commandFactory = CommandFactory()
+            var command = commandFactory.createCommand("sign", withSubCommand: "display", arguments: ["file": file])
 
             let status = command.execute()
             if status {

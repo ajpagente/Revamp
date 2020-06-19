@@ -6,6 +6,12 @@
 
 import Foundation
 
+public struct CLI {
+    let command:    String
+    let subCommand: String?
+    let arguments: [String:String]
+}
+
 public enum CommmandError: Error {
     case unknownCommand
     case argumentError
@@ -29,4 +35,10 @@ public protocol Command {
     func getOutput(_ type: CommandOutputType) -> [String]
     func getError() -> [String]
     mutating func execute() -> Bool
+}
+
+public struct UnknownCommand: Command {
+    public func getOutput(_ type: CommandOutputType) -> [String] { return ["Unknown command"] }
+    public func getError() -> [String] { return ["Unknown command"] }
+    public mutating func execute() -> Bool { return false }
 }
