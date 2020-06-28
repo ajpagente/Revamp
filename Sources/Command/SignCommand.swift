@@ -38,7 +38,7 @@ public struct SignCommand: Command {
     }
 
     public mutating func execute() -> Bool {
-        self.output = SystemCommand.FileInfo(of: arguments["file"]!)
+        self.output = SystemCommand.fileInfo(of: arguments["file"]!)
         return true
     }
 }

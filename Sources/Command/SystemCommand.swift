@@ -7,7 +7,7 @@
 import Foundation
 
 public struct SystemCommand {
-    public static func FileInfo(of filePath: String, with arguments: [String:String] = ["":""]) -> CommandOutput {
+    public static func fileInfo(of filePath: String, with arguments: [String:String] = ["":""]) -> CommandOutput {
         var appName     = ""
 
         let tempDirectoryURL  = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -20,8 +20,7 @@ public struct SystemCommand {
         do {
             tempExtractionURL = try fileManager.createTemporaryDirectory(atPath: "ipa-extract")
 
-            let unzipOutput = Process().execute("/usr/bin/unzip", arguments: ["-q",ipaURL.path,"-d",tempExtractionURL!.path])
-            // TODO: Error handling
+            unzip(ipaURL.path, to: tempExtractionURL!.path)
 
             let resourceKeys = Set<URLResourceKey>([.nameKey, .isDirectoryKey])
             let directoryEnumerator = fileManager.enumerator(at: tempExtractionURL!, includingPropertiesForKeys: Array(resourceKeys), options: .skipsHiddenFiles)!
@@ -58,5 +57,11 @@ public struct SystemCommand {
         } 
 
         return CommandOutput(simple: [""], verbose: [""])
+    }
+
+    @discardableResult
+    public static func unzip(_ filePath: String, to extractPath: String) -> Bool {
+        let output = Process().execute("/usr/bin/unzip", arguments: ["-q", filePath, "-d", extractPath])
+        return true
     }
 }
