@@ -31,7 +31,8 @@ extension Revamp {
     
     struct Sign: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Sign and analyze signatures of Mac and iOS apps.",
-            subcommands: [Display.self, Verify.self])
+            subcommands: [Display.self, Code.self, Verify.self],
+            defaultSubcommand: Display.self)
     }
 }
 
@@ -88,6 +89,22 @@ extension Revamp.Sign {
                     }
                 }
             }       
+        }
+    }
+
+    struct Code: ParsableCommand {
+        static var configuration = CommandConfiguration(abstract: "(Re)sign an ipa or app")
+
+        @OptionGroup()
+        var options: Options
+
+        @Option(name: .shortAndLong, help: "The ipa or app")
+        var file: String
+
+        mutating func run() {
+            let commandFactory = CommandFactory()
+            var command = commandFactory.createCommand("sign", withSubCommand: "code", arguments: ["file": file])
+            let status = command.execute()    
         }
     }
 

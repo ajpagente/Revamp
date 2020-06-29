@@ -9,7 +9,7 @@ import Foundation
 public struct CommandFactory {
     public init() { }
 
-    public func createCommand(_ commandName: String, withSubCommand subCommandName: String, 
+    public func createCommand(_ commandName: String, withSubCommand subCommandName:String = "", 
                             arguments: [String:String]) -> Command {
         let command: Command
 

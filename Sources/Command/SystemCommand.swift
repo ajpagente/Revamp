@@ -5,6 +5,7 @@
 */
 
 import Foundation
+import Files
 
 public struct SystemCommand {
     public static func fileInfo(of filePath: String, with arguments: [String:String] = ["":""]) -> CommandOutput {
@@ -30,10 +31,34 @@ public struct SystemCommand {
         let _ = Process().execute("/usr/bin/unzip", arguments: ["-q", filePath, "-d", extractPath])
         return true
     }
+
+    @discardableResult
+    public static func codesign(_ filePath: String) -> Bool {
+        let tempExtractionURL = extractToTemporaryDirectory(filePath)
+        let foldersToSign     = findDirectories(withExtension: [".app", ".framework"], in: tempExtractionURL!.path)
+        return true
+    }
+
+    public static func findDirectories(withExtension extensions: [String], in folderPath: String) -> [Folder] {
+        let folder         = try! Folder(path: folderPath)
+        let folders        = folder.subfolders.recursive
+        var matchedFolders = [Folder]()
+
+        for folder in folders {
+            for suffix in extensions {
+                if folder.name.hasSuffix(suffix) {
+                    matchedFolders.append(folder)
+                }
+            }
+        }
+
+        print(matchedFolders)
+        return matchedFolders
+    }
 }
 
-extension SystemCommand {
-    private static func extractToTemporaryDirectory(_ filePath: String) -> URL? {
+private extension SystemCommand {
+    static func extractToTemporaryDirectory(_ filePath: String) -> URL? {
         let fileManager = FileManager.default
         let ipaURL = URL(fileURLWithPath: filePath, isDirectory: false)
 
@@ -48,28 +73,8 @@ extension SystemCommand {
 
     // A directory called <app name>.app is expected to be present in an ipa
     private static func getAppName(from extractionURL: URL) -> String {
-        var appName = ""
-        let fileManager = FileManager.default
-        let resourceKeys = Set<URLResourceKey>([.nameKey, .isDirectoryKey])
-        let directoryEnumerator = fileManager.enumerator(at: extractionURL, includingPropertiesForKeys: Array(resourceKeys), options: .skipsHiddenFiles)!
-            
-        for case let fileURL as URL in directoryEnumerator {
-            guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
-                let isDirectory = resourceValues.isDirectory,
-                let name = resourceValues.name
-                else {
-                    continue
-                }
-                
-            if isDirectory {
-                if name.contains(".app") { 
-                    appName = name    
-                    break 
-                }
-            }
-        }
-
-        return appName
+        let appFolder = findDirectories(withExtension: [".app"], in: extractionURL.path)
+        return appFolder[0].name
     }
     
 }

@@ -14,7 +14,7 @@ public struct SignCommandFactory {
         case "display":
             signCommand = SignCommand(.display, with: arguments)
         default:
-            signCommand = SignCommand(.display, with: arguments)
+            signCommand = SignCommand(.code, with: arguments)
         }
 
         return signCommand

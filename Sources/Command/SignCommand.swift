@@ -21,6 +21,7 @@ public struct SignCommand: Command {
     
     public enum SubCommand {
         case display
+        case code
         case verify
     }
 
@@ -38,7 +39,16 @@ public struct SignCommand: Command {
     }
 
     public mutating func execute() -> Bool {
-        self.output = SystemCommand.fileInfo(of: arguments["file"]!)
+        switch subCommand {
+            case .display:
+                self.output = SystemCommand.fileInfo(of: arguments["file"]!)
+            case .code:
+                let _ = SystemCommand.codesign(arguments["file"]!)
+            case .verify:
+                self.output = CommandOutput(simple:  ["Verify is not implemented yet!!!"], 
+                                            verbose: ["Verify is not implemented yet!!!"])
+        }
+        
         return true
     }
 }
