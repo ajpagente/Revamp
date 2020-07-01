@@ -43,7 +43,7 @@ public struct SignCommand: Command {
             case .display:
                 self.output = SystemCommand.fileInfo(of: arguments["file"]!)
             case .code:
-                let _ = SystemCommand.codesign(arguments["file"]!)
+                let _ = SystemCommand.codesign(arguments["file"]!, with: arguments["certificate"]!)
             case .verify:
                 self.output = CommandOutput(simple:  ["Verify is not implemented yet!!!"], 
                                             verbose: ["Verify is not implemented yet!!!"])

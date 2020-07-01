@@ -101,9 +101,13 @@ extension Revamp.Sign {
         @Option(name: .shortAndLong, help: "The ipa or app")
         var file: String
 
+        @Option(name: .shortAndLong, help: "The signing certificate Common Name or the SHA1 hash value. The hash value may contain spaces.")
+        var certificate: String
+
         mutating func run() {
             let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand("sign", withSubCommand: "code", arguments: ["file": file])
+            var command = commandFactory.createCommand("sign", withSubCommand: "code", 
+                                                    arguments: ["file": file, "certificate":certificate])
             let status = command.execute()    
         }
     }

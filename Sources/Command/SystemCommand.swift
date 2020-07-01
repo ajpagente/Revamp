@@ -33,9 +33,15 @@ public struct SystemCommand {
     }
 
     @discardableResult
-    public static func codesign(_ filePath: String) -> Bool {
+    public static func codesign(_ filePath: String, with certificate: String) -> Bool {
         let tempExtractionURL = extractToTemporaryDirectory(filePath)
-        let foldersToSign     = findDirectories(withExtension: [".app", ".framework"], in: tempExtractionURL!.path)
+        // let foldersToSign     = findDirectories(withExtension: [".app", ".framework", "*.appex"], in: tempExtractionURL!.path)
+
+        let appFolder = getAppFolder(from: tempExtractionURL!)
+        let embeddedProvisionFile = appFolder.path + "embedded.mobileprovision"
+        // print(embeddedProvisionPath)
+        let entitlementsPlist = extractEntitlements(from: embeddedProvisionFile)
+        print(entitlementsPlist!)
         return true
     }
 
@@ -72,9 +78,33 @@ private extension SystemCommand {
     }
 
     // A directory called <app name>.app is expected to be present in an ipa
-    private static func getAppName(from extractionURL: URL) -> String {
+    static func getAppName(from extractionURL: URL) -> String {
         let appFolder = findDirectories(withExtension: [".app"], in: extractionURL.path)
         return appFolder[0].name
+    }
+
+    static func getAppFolder(from extractionURL: URL) -> Folder {
+        let appFolder = findDirectories(withExtension: [".app"], in: extractionURL.path)
+        return appFolder.first!
+    }
+
+    // Get the entitlement from the provisioning profile and save it to a file
+    static func extractEntitlements(from profile: String) -> File? {
+        let out = Process().execute("/usr/bin/security", arguments: ["cms", "-D", "-i", profile])
+
+        do {
+        let profilePlist = try Folder.temporary.createFile(at: "work/profile.plist", contents: out.output.data(using: .utf8))
+        let entitlementContent = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
+
+        let entitlementsPlist = try Folder.temporary.createFile(at: "work/entitlements.plist", contents: entitlementContent.output.data(using: .utf8))
+
+return entitlementsPlist
+        // print(entitlementContent)
+ 
+        } catch { }
+        // security cms -D -i "$APPDIR/Payload/$APPLICATION/embedded.mobileprovision"
+        // /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' "$TMPDIR/provisioning.plist" > "$TMPDIR/entitlements.plist"
+        return nil 
     }
     
 }

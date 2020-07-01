@@ -21,21 +21,21 @@ final class revampTests: XCTestCase {
         }  
     }
 
-    func testParseAllProvisioningProfiles() throws {
-        let fileManager = FileManager.default
-        let urls = try fileManager.contentsOfDirectory(at: resourcesURL!, 
-                                                           includingPropertiesForKeys: [],
-                                                           options: [ .skipsSubdirectoryDescendants,
-                                                                      .skipsHiddenFiles ] )
+    // func testParseAllProvisioningProfiles() throws {
+    //     let fileManager = FileManager.default
+    //     let urls = try fileManager.contentsOfDirectory(at: resourcesURL!, 
+    //                                                        includingPropertiesForKeys: [],
+    //                                                        options: [ .skipsSubdirectoryDescendants,
+    //                                                                   .skipsHiddenFiles ] )
 
-        for url in urls {
-            if let data = try? Data(contentsOf: url) {
-                let profile = try ProvisioningProfile.parse(from: data)
-                print(profile!.UUID)     
-            }  
-        }
+    //     for url in urls {
+    //         if let data = try? Data(contentsOf: url) {
+    //             let profile = try ProvisioningProfile.parse(from: data)
+    //             print(profile!.UUID)     
+    //         }  
+    //     }
 
-    }
+    // }
 
     // func testExample() throws {
     //     // This is an example of a functional test case.
