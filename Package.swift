@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "revamp",
+    platforms: [
+        .macOS(.v10_11)
+    ],
     products: [
         .executable(name: "revamp", targets: ["revamp"]),
         .library(name: "Library", targets: ["Library"]),
@@ -14,6 +17,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.1.0"),
         .package(url: "https://github.com/JohnSundell/Files", from: "4.0.0"),
+        .package(url: "https://github.com/weichsel/ZIPFoundation/", .upToNextMajor(from: "0.9.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -28,7 +32,7 @@ let package = Package(
         .target(
             name: "Command",
             dependencies: [.product(name: "Files", package: "Files"),
-                            "Library"]),
+                            "Library", "ZIPFoundation"]),
         .testTarget(
             name: "revampTests",
             dependencies: ["Library"]),

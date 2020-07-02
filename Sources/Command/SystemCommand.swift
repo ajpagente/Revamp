@@ -6,6 +6,7 @@
 
 import Foundation
 import Files
+import ZIPFoundation
 
 public struct SystemCommand {
     public static func fileInfo(of filePath: String, with arguments: [String:String] = ["":""]) -> CommandOutput {
@@ -35,13 +36,32 @@ public struct SystemCommand {
     @discardableResult
     public static func codesign(_ filePath: String, with certificate: String) -> Bool {
         let tempExtractionURL = extractToTemporaryDirectory(filePath)
-        // let foldersToSign     = findDirectories(withExtension: [".app", ".framework", "*.appex"], in: tempExtractionURL!.path)
+        let foldersToSign     = findDirectories(withExtension: [".app", "*.appex", ".framework"], in: tempExtractionURL!.path)
 
         let appFolder = getAppFolder(from: tempExtractionURL!)
         let embeddedProvisionFile = appFolder.path + "embedded.mobileprovision"
-        // print(embeddedProvisionPath)
-        let entitlementsPlist = extractEntitlements(from: embeddedProvisionFile)
-        print(entitlementsPlist!)
+
+        let entitlementsPlistFile = extractEntitlements(from: embeddedProvisionFile)
+        print(entitlementsPlistFile!)
+
+        // Start the signing process
+        for folder in foldersToSign {
+            let out = Process().execute("/usr/bin/codesign", arguments: ["--continue", "-f", "-s", certificate, 
+                                                                         "--entitlements", entitlementsPlistFile!.path, folder.path])
+            
+        }
+
+        do {
+            let outputFolder = try Folder.temporary.createSubfolder(named: "output")
+            let resignedFile = outputFolder.path + "/revamped.ipa"
+
+            let destinationURL = URL(fileURLWithPath: resignedFile)
+
+            let fileManager = FileManager()
+            try fileManager.zipItem(at: tempExtractionURL!, to: destinationURL, shouldKeepParent: false)
+
+        } catch { return false }
+                                                         
         return true
     }
 
@@ -58,7 +78,7 @@ public struct SystemCommand {
             }
         }
 
-        print(matchedFolders)
+        // print(matchedFolders)
         return matchedFolders
     }
 }
@@ -93,17 +113,13 @@ private extension SystemCommand {
         let out = Process().execute("/usr/bin/security", arguments: ["cms", "-D", "-i", profile])
 
         do {
-        let profilePlist = try Folder.temporary.createFile(at: "work/profile.plist", contents: out.output.data(using: .utf8))
-        let entitlementContent = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
+            let profilePlist = try Folder.temporary.createFile(at: "work/profile.plist", contents: out.output.data(using: .utf8))
+            let entitlementContent = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
+            let entitlementsPlist = try Folder.temporary.createFile(at: "work/entitlements.plist", contents: entitlementContent.output.data(using: .utf8))
 
-        let entitlementsPlist = try Folder.temporary.createFile(at: "work/entitlements.plist", contents: entitlementContent.output.data(using: .utf8))
+            return entitlementsPlist
+         } catch { }
 
-return entitlementsPlist
-        // print(entitlementContent)
- 
-        } catch { }
-        // security cms -D -i "$APPDIR/Payload/$APPLICATION/embedded.mobileprovision"
-        // /usr/libexec/PlistBuddy -x -c 'Print:Entitlements' "$TMPDIR/provisioning.plist" > "$TMPDIR/entitlements.plist"
         return nil 
     }
     
