@@ -35,6 +35,11 @@ public struct SystemCommand {
 
     @discardableResult
     public static func codesign(_ filePath: String, with certificate: String) -> Bool {
+        //TODO: Check for ipa or app extension
+        //TODO: Check that ipa is a zip
+        //TODO: Check that app is a folder
+        
+
         let tempExtractionURL = extractToTemporaryDirectory(filePath)
         let foldersToSign     = findDirectories(withExtension: [".app", "*.appex", ".framework"], in: tempExtractionURL!.path)
 

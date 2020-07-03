@@ -78,6 +78,6 @@ final class revampTests: XCTestCase {
 
     static var allTests = [
         ("testParseProvisioningProfile",     testParseProvisioningProfile),
-        ("testParseAllProvisioningProfiles", testParseAllProvisioningProfiles),
+        // ("testParseAllProvisioningProfiles", testParseAllProvisioningProfiles),
     ]
 }

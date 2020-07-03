@@ -35,6 +35,7 @@ let package = Package(
                             "Library", "ZIPFoundation"]),
         .testTarget(
             name: "revampTests",
-            dependencies: ["Library"]),
+            dependencies: [.product(name: "Files", package: "Files"),
+                "Library", "Command"]),
     ]
 )
