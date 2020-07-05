@@ -6,6 +6,7 @@ import Files
 final class WorkspaceTests: XCTestCase {
     private var folder: Folder!
     private var resourcesFolder: Folder!
+    private var payloadFolder: Folder!
 
     // MARK: - XCTestCase
     override func setUp() {
@@ -14,6 +15,7 @@ final class WorkspaceTests: XCTestCase {
         try! folder.empty()
 
         resourcesFolder = try! Folder(path: FileManager.default.currentDirectoryPath).subfolder(at: "Tests/Resources")
+        payloadFolder = try! Folder(path: FileManager.default.currentDirectoryPath).subfolder(at: "Tests/Resources/ex-tiny")
     }
 
     override func tearDown() {
@@ -44,6 +46,21 @@ final class WorkspaceTests: XCTestCase {
 
         try workspace.writeFile(file, to: .temporary)
         XCTAssertTrue(workspace.tempFolder.containsFile(named: "test.txt"))
+    }
+
+    func testCompressFolder() throws {
+        let workspace = try Workspace()
+
+        try workspace.compressFolder(payloadFolder, to: .input, with: "tiny.ipa")
+        XCTAssertTrue(workspace.inputFolder.containsFile(named: "tiny.ipa"))
+
+        try workspace.compressFolder(payloadFolder, to: .output, with: "tiny.ipa")
+        XCTAssertTrue(workspace.outputFolder.containsFile(named: "tiny.ipa"))
+        
+        try workspace.compressFolder(payloadFolder, to: .temporary, with: "tiny.ipa")
+        XCTAssertTrue(workspace.tempFolder.containsFile(named: "tiny.ipa"))
+
+        try workspace.emptyFolders()
     }
 
     func testWriteWithDecompress() throws {
@@ -98,6 +115,8 @@ final class WorkspaceTests: XCTestCase {
     static var allTests = [
         ("testCreate"      , testCreate),
         ("testWrite"       , testWrite),
+        ("testCompressFolder", testCompressFolder),
+        ("testWriteWithDecompress", testWriteWithDecompress),
         ("testCopyFile"    , testCopyFile),
         ("testEmptyFolders", testEmptyFolders),
     ]

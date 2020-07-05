@@ -57,6 +57,24 @@ public struct Workspace {
         }
     } 
 
+    /// Compresses the specified folder and stores it to the destination.
+    public func compressFolder(_ folder: Folder, to destination: Destination, with name: String) throws {      
+        let sourceURL = URL(fileURLWithPath: folder.path)
+
+        var zipFileURL: URL
+        switch destination {
+            case .input:
+                zipFileURL = URL(fileURLWithPath: inputFolder.path + "\(name)")
+            case .output:
+                zipFileURL = URL(fileURLWithPath: outputFolder.path + "\(name)")
+            case .temporary:
+                zipFileURL = URL(fileURLWithPath: tempFolder.path + "\(name)")
+        }
+
+        let fileManager = FileManager()
+        try fileManager.zipItem(at: sourceURL, to: zipFileURL, shouldKeepParent: false)
+    }
+
     /// Copies the file located in the output folder to a folder.
     public func copyFileFromOutput(named name: String, to folder: Folder) throws {
         let file = try outputFolder.file(named: name)
