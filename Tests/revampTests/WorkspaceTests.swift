@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import Command
+import Command
 import Files
 
 final class WorkspaceTests: XCTestCase {

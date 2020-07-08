@@ -30,12 +30,15 @@ let package = Package(
             name: "Library",
             dependencies: []),
         .target(
+            name: "Services",
+            dependencies: []),        
+        .target(
             name: "Command",
             dependencies: [.product(name: "Files", package: "Files"),
                             "Library", "ZIPFoundation"]),
         .testTarget(
             name: "revampTests",
             dependencies: [.product(name: "Files", package: "Files"),
-                "Library", "Command"]),
+                "Library", "Command", "Services"]),
     ]
 )
