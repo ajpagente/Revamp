@@ -6,30 +6,31 @@
 
 import Foundation
 import Files
+// import Services
 import ZIPFoundation
 
 public struct SystemCommand {
     public static func fileInfo(of filePath: String, with arguments: [String:String] = ["":""]) -> CommandOutput {
-        let tempExtractionURL = extractToTemporaryDirectory(filePath)
-        let appName           = getAppName(from: tempExtractionURL!)
+        // let tempExtractionURL = extractToTemporaryDirectory(filePath)
+        // let appName           = getAppName(from: tempExtractionURL!)
 
-        if let tempExtractionURL = tempExtractionURL {
-            let tempPayloadURL = tempExtractionURL.appendingPathComponent("Payload")
-            let tempAppURL     = tempPayloadURL.appendingPathComponent(appName)
+        // if let tempExtractionURL = tempExtractionURL {
+        //     let tempPayloadURL = tempExtractionURL.appendingPathComponent("Payload")
+        //     let tempAppURL     = tempPayloadURL.appendingPathComponent(appName)
 
-            let simpleOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=2","-d",tempAppURL.path])
+        //     let simpleOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=2","-d",tempAppURL.path])
 
-            let verboseOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=4","-d",tempAppURL.path])
+        //     let verboseOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=4","-d",tempAppURL.path])
 
-            return CommandOutput(simple: [simpleOutput.output], verbose: [verboseOutput.output])
-        } 
+        //     return CommandOutput(simple: [simpleOutput.output], verbose: [verboseOutput.output])
+        // } 
 
         return CommandOutput(simple: [""], verbose: [""])
     }
 
     @discardableResult
     public static func unzip(_ filePath: String, to extractPath: String) -> Bool {
-        let _ = Process().execute("/usr/bin/unzip", arguments: ["-q", filePath, "-d", extractPath])
+        // let _ = Process().execute("/usr/bin/unzip", arguments: ["-q", filePath, "-d", extractPath])
         return true
     }
 
@@ -40,32 +41,32 @@ public struct SystemCommand {
         //TODO: Check that app is a folder
         
 
-        let tempExtractionURL = extractToTemporaryDirectory(filePath)
-        let foldersToSign     = findDirectories(withExtension: [".app", "*.appex", ".framework"], in: tempExtractionURL!.path)
+        // let tempExtractionURL = extractToTemporaryDirectory(filePath)
+        // let foldersToSign     = findDirectories(withExtension: [".app", "*.appex", ".framework"], in: tempExtractionURL!.path)
 
-        let appFolder = getAppFolder(from: tempExtractionURL!)
-        let embeddedProvisionFile = appFolder.path + "embedded.mobileprovision"
+        // let appFolder = getAppFolder(from: tempExtractionURL!)
+        // let embeddedProvisionFile = appFolder.path + "embedded.mobileprovision"
 
-        let entitlementsPlistFile = extractEntitlements(from: embeddedProvisionFile)
-        print(entitlementsPlistFile!)
+        // let entitlementsPlistFile = extractEntitlements(from: embeddedProvisionFile)
+        // print(entitlementsPlistFile!)
 
-        // Start the signing process
-        for folder in foldersToSign {
-            let out = Process().execute("/usr/bin/codesign", arguments: ["--continue", "-f", "-s", certificate, 
-                                                                         "--entitlements", entitlementsPlistFile!.path, folder.path])
+        // // Start the signing process
+        // for folder in foldersToSign {
+        //     let out = Process().execute("/usr/bin/codesign", arguments: ["--continue", "-f", "-s", certificate, 
+        //                                                                  "--entitlements", entitlementsPlistFile!.path, folder.path])
             
-        }
+        // }
 
-        do {
-            let outputFolder = try Folder.temporary.createSubfolder(named: "output")
-            let resignedFile = outputFolder.path + "/revamped.ipa"
+        // do {
+        //     let outputFolder = try Folder.temporary.createSubfolder(named: "output")
+        //     let resignedFile = outputFolder.path + "/revamped.ipa"
 
-            let destinationURL = URL(fileURLWithPath: resignedFile)
+        //     let destinationURL = URL(fileURLWithPath: resignedFile)
 
-            let fileManager = FileManager()
-            try fileManager.zipItem(at: tempExtractionURL!, to: destinationURL, shouldKeepParent: false)
+        //     let fileManager = FileManager()
+        //     try fileManager.zipItem(at: tempExtractionURL!, to: destinationURL, shouldKeepParent: false)
 
-        } catch { return false }
+        // } catch { return false }
                                                          
         return true
     }
@@ -115,15 +116,15 @@ private extension SystemCommand {
 
     // Get the entitlement from the provisioning profile and save it to a file
     static func extractEntitlements(from profile: String) -> File? {
-        let out = Process().execute("/usr/bin/security", arguments: ["cms", "-D", "-i", profile])
+        // let out = Process().execute("/usr/bin/security", arguments: ["cms", "-D", "-i", profile])
 
-        do {
-            let profilePlist = try Folder.temporary.createFile(at: "work/profile.plist", contents: out.output.data(using: .utf8))
-            let entitlementContent = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
-            let entitlementsPlist = try Folder.temporary.createFile(at: "work/entitlements.plist", contents: entitlementContent.output.data(using: .utf8))
+        // do {
+        //     let profilePlist = try Folder.temporary.createFile(at: "work/profile.plist", contents: out.output.data(using: .utf8))
+        //     let entitlementContent = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
+        //     let entitlementsPlist = try Folder.temporary.createFile(at: "work/entitlements.plist", contents: entitlementContent.output.data(using: .utf8))
 
-            return entitlementsPlist
-         } catch { }
+        //     return entitlementsPlist
+        //  } catch { }
 
         return nil 
     }

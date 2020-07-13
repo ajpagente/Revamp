@@ -2,6 +2,8 @@
 *  Revamp
 *  Copyright (c) Alvin John Pagente 2020
 *  MIT license, see LICENSE file for details
+*
+*  The code is based on https://github.com/Sherlouk/SwiftProvisioningProfile
 */
 
 import Foundation
@@ -14,7 +16,7 @@ public struct ProvisioningProfile: Codable {
         case creationDate                  = "CreationDate"
         case platforms                     = "Platform"
         // case developerCertificates         = "DeveloperCertificates"
-        // case entitlements                  = "Entitlements"
+        case entitlements                  = "Entitlements"
         case expirationDate                = "ExpirationDate"
         case name                          = "Name"
         case provisionedDevices            = "ProvisionedDevices"
@@ -31,6 +33,7 @@ public struct ProvisioningProfile: Codable {
     public var applicationIdentifierPrefixes: [String]
     public var creationDate:                  Date
     public var platforms:                     [String]
+    public var entitlements:                  [String: PropertyListDictionaryValue]
     public var expirationDate:                Date
     public var name:                          String
     public var provisionedDevices:            [String]?

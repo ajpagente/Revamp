@@ -6,12 +6,12 @@
 
 import Foundation
 
-struct ProcessOutput {
+public struct ProcessOutput {
     var status: Int32
     var output: String
 }
 
-extension Process {
+public extension Process {
     func launchSynchronous() -> ProcessOutput {
         let pipe = Pipe()
         self.standardOutput = pipe
