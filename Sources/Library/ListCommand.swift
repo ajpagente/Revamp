@@ -5,7 +5,6 @@
 */
 
 import Foundation
-import Library
 
 public struct ListCommand: Command {
     private var errorReason = CommandErrorReason(simple: [])

@@ -1,7 +1,8 @@
 import XCTest
 
-import Services
+import Library
 import Files
+
 
 final class SignerTests: XCTestCase {
     private var folder: Folder!
@@ -43,7 +44,12 @@ struct TestSigningEngine: SigningEngine {
     var certificate: String
     var entitlementsPlist: File
 
-    func sign() throws -> Bool {
+    func sign(folder: Folder) throws -> Bool {
+        // do nothing
+        return true
+    }
+
+    func sign(file: File) throws -> Bool {
         // do nothing
         return true
     }

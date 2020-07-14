@@ -7,7 +7,6 @@
 import ArgumentParser
 import Foundation
 import Library
-import Command
 
 struct Revamp: ParsableCommand {
     static var configuration = CommandConfiguration(

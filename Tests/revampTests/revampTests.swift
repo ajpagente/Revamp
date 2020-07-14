@@ -1,6 +1,6 @@
 import XCTest
-// import class Foundation.Bundle
-@testable import Library
+
+import Library
 
 final class revampTests: XCTestCase {
 

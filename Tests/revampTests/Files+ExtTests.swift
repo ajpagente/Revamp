@@ -1,7 +1,6 @@
 import XCTest
+import Library
 import Files
-import Command
-import Services
 
 final class FilesExtTests: XCTestCase {
     private var resourcesFolder: Folder!
