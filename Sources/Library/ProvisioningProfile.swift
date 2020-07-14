@@ -7,6 +7,7 @@
 */
 
 import Foundation
+import Files
 
 public struct ProvisioningProfile: Codable {
 
@@ -43,6 +44,15 @@ public struct ProvisioningProfile: Codable {
     public var UUID:                          String
     public var version:                       Int
 
+}
+
+public extension ProvisioningProfile {
+    func writeEntitlementsPlist(to filePath: String) throws {
+        let encoder = PropertyListEncoder()
+        encoder.outputFormat = .xml
+        let data = try encoder.encode(entitlements)
+        try data.write(to: URL(fileURLWithPath: filePath))
+    }
 }
 
 struct ProvisioningProfiles {

@@ -11,7 +11,7 @@ final class ProvisioningProfileTests: XCTestCase {
     // MARK: - XCTestCase
     override func setUp() {
         super.setUp()
-        folder = try! Folder.home.createSubfolderIfNeeded(withName: ".signerTest")
+        folder = try! Folder.home.createSubfolderIfNeeded(withName: ".profileTest")
         try! folder.empty()
 
         resourcesFolder = try! Folder(path: FileManager.default.currentDirectoryPath).subfolder(at: "Tests/Resources")
@@ -70,14 +70,27 @@ final class ProvisioningProfileTests: XCTestCase {
         case .array(let elements):
             XCTAssertEqual(elements.count, 1)
             XCTAssertEqual(elements[0], .string("N35W8VCJCA.*"))
-            print(elements)
         default:
             print("Not an array")
         }
     }
 
+    func testWriteEntitlementsPlist() throws {
+        let data = try Data(contentsOf: testProfileURL)
+        let profile = try ProvisioningProfile.parse(from: data)
+
+        let entitlementsPlistPath = folder.path + "entitlements.plist"
+        try profile!.writeEntitlementsPlist(to: entitlementsPlistPath)
+        XCTAssertTrue(folder.containsFile(named: "entitlements.plist"))
+    }
+
+    private func printFileContent(of file: File) throws {
+        print(try file.readAsString())
+    }
+
     static var allTests = [
         ("testParse"      , testParse),
+        ("testWriteEntitlementsPlist", testWriteEntitlementsPlist),
     ]
 
 }
