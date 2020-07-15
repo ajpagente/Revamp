@@ -28,6 +28,11 @@ extension Revamp {
             subcommands: [Profile.self])
     }
     
+    struct Show: ParsableCommand {
+        static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.",
+            subcommands: [Info.self])
+    }
+
     struct Sign: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Sign and analyze signatures of Mac and iOS apps.",
             subcommands: [Display.self, Code.self, Verify.self],
@@ -44,7 +49,34 @@ extension Revamp.List {
 
         mutating func run() {
             let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand("list", withSubCommand: "profile", arguments: ["":""])
+            var command = commandFactory.createCommand(ofType: .list, withSubCommand: "profile", arguments: ["":""])
+
+            let status = command.execute()
+            if status {
+                if options.verbose {
+                    for output in command.getOutput(.verbose) {
+                        print(output + "\n")
+                    }
+                } else {
+                    for output in command.getOutput(.simple) {
+                        print(output)
+                    }
+                }
+            }       
+        }
+    }
+}
+
+extension Revamp.Show {
+    struct Info: ParsableCommand {
+        static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
+
+        @OptionGroup()
+        var options: Options
+
+        mutating func run() {
+            let commandFactory = CommandFactory()
+            var command = commandFactory.createCommand(ofType: .list, withSubCommand: "profile", arguments: ["":""])
 
             let status = command.execute()
             if status {
@@ -74,7 +106,7 @@ extension Revamp.Sign {
 
         mutating func run() {
             let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand("sign", withSubCommand: "display", arguments: ["file": file])
+            var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "display", arguments: ["file": file])
 
             let status = command.execute()
             if status {
@@ -105,7 +137,7 @@ extension Revamp.Sign {
 
         mutating func run() {
             let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand("sign", withSubCommand: "code", 
+            var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "code", 
                                                     arguments: ["file": file, "certificate":certificate])
             let status = command.execute()    
         }

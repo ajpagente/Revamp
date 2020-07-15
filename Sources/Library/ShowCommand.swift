@@ -7,7 +7,7 @@
 import Foundation
 import Files
 
-public struct SignCommand: Command {
+public struct ShowCommand: Command {
     private var errorReason = CommandErrorReason(simple: [])
     private var output      = CommandOutput(simple: [], verbose: [])
     private var arguments   = ["":""]  
@@ -20,9 +20,8 @@ public struct SignCommand: Command {
     }
     
     public enum SubCommand {
-        case display
-        case code
-        case verify
+        case info
+        // case entitlement
     }
 
     public func getError() -> [String] {
@@ -40,22 +39,11 @@ public struct SignCommand: Command {
 
     public mutating func execute() -> Bool {
         switch subCommand {
-            case .display:
-                self.output = CommandOutput(simple:  ["This command is not implemented yet!!!"], 
-                                            verbose: ["This command is not implemented yet!!!"])
-            case .code:               
-                do {
-                    let ipaFile = try File(path: arguments["file"]!)
-                    let entitlementsPlistFile = try getEntitlements(from: ipaFile)
-                    let _ = try Signer.sign(ipaFile, using: DefaultSigningEngine(certificate: arguments["certificate"]!,
-                                                                             entitlementsPlist: entitlementsPlistFile))
-                } catch {
-                    self.output = CommandOutput(simple:  ["Codesigning failed!!!"], 
-                                                verbose: ["Codesigning failed!!!"])
-                }                
-            case .verify:
-                self.output = CommandOutput(simple:  ["Verify is not implemented yet!!!"], 
-                                            verbose: ["Verify is not implemented yet!!!"])
+            case .info:
+                self.output = CommandOutput(simple:  ["Info is not implemented yet!!!"], 
+                                            verbose: ["Info is not implemented yet!!!"])
+            // case .entitlement:               
+       
         }
         
         return true

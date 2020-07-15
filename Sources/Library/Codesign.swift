@@ -51,22 +51,3 @@ public struct Signer {
         return true
     }
 }
-
-// private extension Signer {
-//     static func getAppFolder(from folder: Folder) -> Folder {
-//         let appFolder = folder.findSubfolders(withExtension: [".app"])
-//         return appFolder.first!
-//     }
-
-//     static func createEntitlementsPlist(named name: String, from appFolder: Folder, 
-//                                         to destinationFolder: Folder) throws -> File {
-//         let embeddedMobileProvision = appFolder.path + "embedded.mobileprovision"
-//         let out: ProcessOutput = Process().execute("/usr/bin/security", arguments: ["cms", "-D", "-i", embeddedMobileProvision])
-
-//         let profilePlist = try destinationFolder.createFile(at: "profile.plist", contents: out.output.data(using: .utf8))
-//         let entitlementContent: ProcessOutput = Process().execute("/usr/libexec/PlistBuddy", arguments: ["-x", "-c", "Print:Entitlements", profilePlist.path])
-//         let entitlementsPlist = try destinationFolder.createFile(named: name, contents: entitlementContent.output.data(using: .utf8))
-
-//         return entitlementsPlist
-//     }
-// }

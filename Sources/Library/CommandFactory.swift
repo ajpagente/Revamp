@@ -9,16 +9,26 @@ import Foundation
 public struct CommandFactory {
     public init() { }
 
-    public func createCommand(_ commandName: String, withSubCommand subCommandName:String = "", 
+    public enum CommandType {
+        // case info
+        case list
+        case sign
+    }
+
+    public func createCommand(ofType commandType: CommandType, withSubCommand subCommandName:String = "", 
                             arguments: [String:String]) -> Command {
         let command: Command
 
-        switch commandName {
-        case "list":
+        switch commandType {
+        // case .info:
+            // let signCommandFactory = SignCommandFactory()
+            // command = signCommandFactory.createSignCommand(for: subCommandName, arguments: arguments)
+
+        case .list:
             let listCommandFactory = ListCommandFactory()
             command = listCommandFactory.createListCommand(for: subCommandName, arguments: arguments)
 
-        case "sign":
+        case .sign:
             let signCommandFactory = SignCommandFactory()
             command = signCommandFactory.createSignCommand(for: subCommandName, arguments: arguments)
 
