@@ -18,5 +18,4 @@ public struct AppAnalyzer {
         
         return processOutput.output.components(separatedBy: "\n")
     }
-
 }
