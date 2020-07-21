@@ -30,7 +30,7 @@ final class InfoPlistTests: XCTestCase {
         XCTAssertEqual(infoPlist.bundleVersionShort, "2.0.0")
         XCTAssertEqual(infoPlist.bundleVersion, "2.0.0")
         XCTAssertEqual(infoPlist.minOSVersion, "10.0")
-        XCTAssertEqual(infoPlist.buildType, "development")
+        XCTAssertEqual(infoPlist.getBuildType(), "development")
     }
 
     static var allTests = [
