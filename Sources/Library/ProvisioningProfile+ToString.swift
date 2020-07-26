@@ -12,27 +12,17 @@ public extension ProvisioningProfile {
     }
 
     var verboseOutput: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd,yyyy"
+        
         return """
         Profile name: \(name)
         UUID: \(UUID)
         App ID name: \(appIDName)
         Team name: \(teamName)
+        Expiry: \(dateFormatter.string(from: expirationDate))
         """
 
-        //         case appIDName                     = "AppIDName"
-        // case applicationIdentifierPrefixes = "ApplicationIdentifierPrefix"
-        // case creationDate                  = "CreationDate"
-        // case platforms                     = "Platform"
-        // // case developerCertificates         = "DeveloperCertificates"
-        // // case entitlements                  = "Entitlements"
-        // case expirationDate                = "ExpirationDate"
-        // case name                          = "Name"
-        // case provisionedDevices            = "ProvisionedDevices"
-        // case teamIdentifiers               = "TeamIdentifier"
-        // case teamName                      = "TeamName"
-        // case timeToLive                    = "TimeToLive"
-        // case UUID                          = "UUID"
-        // case version                       = "Version"
     }
 
 }

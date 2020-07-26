@@ -53,6 +53,7 @@ public extension ProvisioningProfile {
         let data = try encoder.encode(entitlements)
         try data.write(to: URL(fileURLWithPath: filePath))
     }
+
 }
 
 struct ProvisioningProfiles {
