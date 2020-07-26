@@ -15,6 +15,11 @@ public struct InfoPlist: Codable {
         case bundleIdentifier   = "CFBundleIdentifier"
         case minOSVersion       = "MinimumOSVersion"
         case buildType          = "method"
+
+        case platformVersion    = "DTPlatformVersion"
+        case sdkName            = "DTSDKName"
+
+        case supportedPlatforms = "CFBundleSupportedPlatforms"
     }
 
     public var bundleName:         String
@@ -22,6 +27,11 @@ public struct InfoPlist: Codable {
     public var bundleVersion:      String
     public var bundleIdentifier:   String
     public var minOSVersion:       String
+
+    public var platformVersion:    String
+    public var sdkName:            String
+    
+    public var supportedPlatforms: [String]
 
     @DecodableDefault.EmptyString  var buildType: String
 

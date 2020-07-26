@@ -31,6 +31,11 @@ final class InfoPlistTests: XCTestCase {
         XCTAssertEqual(infoPlist.bundleVersion, "2.0.0")
         XCTAssertEqual(infoPlist.minOSVersion, "10.0")
         XCTAssertEqual(infoPlist.getBuildType(), "development")
+
+        XCTAssertEqual(infoPlist.platformVersion, "11.2")
+        XCTAssertEqual(infoPlist.sdkName, "iphoneos11.2")
+        XCTAssertEqual(infoPlist.supportedPlatforms.count, 1)
+        XCTAssertEqual(infoPlist.supportedPlatforms[0], "iPhoneOS")
     }
 
     static var allTests = [
