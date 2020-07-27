@@ -10,12 +10,11 @@ import Library
 
 struct Revamp: ParsableCommand {
     static var configuration = CommandConfiguration(
-        abstract: "A utility for signing iOS apps and provides signing environment query capabilities.",
-        subcommands: [List.self, Sign.self])
+        abstract: "A utility that provides signing environment query capabilities and app info.",
+        subcommands: [List.self, Show.self])
 
 }
 
-// TODO: Fix why this does not appear in help
 struct Options: ParsableArguments {
     @Flag(name: .shortAndLong, help: "Show more details in the output.")
     var verbose: Bool
@@ -33,11 +32,11 @@ extension Revamp {
             subcommands: [Info.self])
     }
 
-    struct Sign: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Sign and analyze signatures of Mac and iOS apps.",
-            subcommands: [Display.self, Code.self, Verify.self],
-            defaultSubcommand: Display.self)
-    }
+    // struct Sign: ParsableCommand {
+    //     static var configuration = CommandConfiguration(abstract: "Sign and analyze signatures of Mac and iOS apps.",
+    //         subcommands: [Display.self, Code.self, Verify.self],
+    //         defaultSubcommand: Display.self)
+    // }
 }
 
 extension Revamp.List {
@@ -74,9 +73,12 @@ extension Revamp.Show {
         @OptionGroup()
         var options: Options
 
+        @Option(name: .shortAndLong, help: "The ipa or app")
+        var file: String
+
         mutating func run() {
             let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand(ofType: .list, withSubCommand: "profile", arguments: ["":""])
+            var command = commandFactory.createCommand(ofType: .show, withSubCommand: "info", arguments: ["file":file])
 
             let status = command.execute()
             if status {
@@ -94,82 +96,82 @@ extension Revamp.Show {
     }
 }
 
-extension Revamp.Sign {
-    struct Display: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Print app signature details.")
+// extension Revamp.Sign {
+//     struct Display: ParsableCommand {
+//         static var configuration = CommandConfiguration(abstract: "Print app signature details.")
 
-        @OptionGroup()
-        var options: Options
+//         @OptionGroup()
+//         var options: Options
 
-        @Option(name: .shortAndLong, help: "The ipa or app")
-        var file: String
+//         @Option(name: .shortAndLong, help: "The ipa or app")
+//         var file: String
 
-        mutating func run() {
-            let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "display", arguments: ["file": file])
+//         mutating func run() {
+//             let commandFactory = CommandFactory()
+//             var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "display", arguments: ["file": file])
 
-            let status = command.execute()
-            if status {
-                if options.verbose {
-                    for output in command.getOutput(.verbose) {
-                        print(output + "\n")
-                    }
-                } else {
-                    for output in command.getOutput(.simple) {
-                        print(output)
-                    }
-                }
-            }       
-        }
-    }
+//             let status = command.execute()
+//             if status {
+//                 if options.verbose {
+//                     for output in command.getOutput(.verbose) {
+//                         print(output + "\n")
+//                     }
+//                 } else {
+//                     for output in command.getOutput(.simple) {
+//                         print(output)
+//                     }
+//                 }
+//             }       
+//         }
+//     }
 
-    struct Code: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "(Re)sign an ipa or app")
+//     struct Code: ParsableCommand {
+//         static var configuration = CommandConfiguration(abstract: "(Re)sign an ipa or app")
 
-        @OptionGroup()
-        var options: Options
+//         @OptionGroup()
+//         var options: Options
 
-        @Option(name: .shortAndLong, help: "The ipa or app")
-        var file: String
+//         @Option(name: .shortAndLong, help: "The ipa or app")
+//         var file: String
 
-        @Option(name: .shortAndLong, help: "The signing certificate Common Name or the SHA1 hash value. The hash value may contain spaces.")
-        var certificate: String
+//         @Option(name: .shortAndLong, help: "The signing certificate Common Name or the SHA1 hash value. The hash value may contain spaces.")
+//         var certificate: String
 
-        mutating func run() {
-            let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "code", 
-                                                    arguments: ["file": file, "certificate":certificate])
-            let status = command.execute()    
-        }
-    }
+//         mutating func run() {
+//             let commandFactory = CommandFactory()
+//             var command = commandFactory.createCommand(ofType: .sign, withSubCommand: "code", 
+//                                                     arguments: ["file": file, "certificate":certificate])
+//             let status = command.execute()    
+//         }
+//     }
 
-    struct Verify: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Verify app signature.")
+//     struct Verify: ParsableCommand {
+//         static var configuration = CommandConfiguration(abstract: "Verify app signature.")
 
-        @OptionGroup()
-        var options: Options
+//         @OptionGroup()
+//         var options: Options
 
-        mutating func run() {
-            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-            let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
+//         mutating func run() {
+//             let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
+//             let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
 
-            var command = ListCommand(path: profileURL)
+//             var command = ListCommand(path: profileURL)
 
-            let status = command.execute()
-            if status {
-                if options.verbose {
-                    for output in command.getOutput(.verbose) {
-                        print(output + "\n")
-                    }
-                } else {
-                    for output in command.getOutput(.simple) {
-                        print(output)
-                    }
-                }
-            }       
-        }
-    }
-}
+//             let status = command.execute()
+//             if status {
+//                 if options.verbose {
+//                     for output in command.getOutput(.verbose) {
+//                         print(output + "\n")
+//                     }
+//                 } else {
+//                     for output in command.getOutput(.simple) {
+//                         print(output)
+//                     }
+//                 }
+//             }       
+//         }
+//     }
+// }
 
 
 

@@ -7,6 +7,21 @@
 import Foundation
 import Files
 
+public struct ShowCommandFactory {
+    public func createCommand(for subcommandName: String, arguments: [String:String]) -> ShowCommand {
+        let showCommand: ShowCommand
+
+        switch subcommandName {
+        case "info":
+            showCommand = ShowCommand(.info, with: arguments)
+        default:
+            showCommand = ShowCommand(.info, with: arguments)
+        }
+
+        return showCommand
+    }
+}
+
 public struct ShowCommand: Command {
     private var errorReason = CommandErrorReason(simple: [])
     private var output      = CommandOutput(simple: [], verbose: [])
@@ -40,8 +55,19 @@ public struct ShowCommand: Command {
     public mutating func execute() -> Bool {
         switch subCommand {
             case .info:
-                self.output = CommandOutput(simple:  ["Info is not implemented yet!!!"], 
-                                            verbose: ["Info is not implemented yet!!!"])
+                do {
+                    let appFile = try File(path: arguments["file"]!)
+                    let info    = try AppAnalyzer.getInfo(from: appFile)
+
+
+
+                    self.output = CommandOutput(simple: info, 
+                                                verbose: info)
+                } catch {
+                    self.output = CommandOutput(simple:  ["Error getting file info!!!"], 
+                                                verbose: ["Error getting file info!!!"])
+                }
+
             // case .entitlement:               
        
         }

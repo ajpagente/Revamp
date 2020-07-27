@@ -9,7 +9,7 @@ import Files
 
 public struct InfoPlist: Codable {
     private enum CodingKeys: String, CodingKey {
-        case bundleName         = "CFBundleDisplayName"
+        case bundleName         = "CFBundleName"
         case bundleVersionShort = "CFBundleShortVersionString"
         case bundleVersion      = "CFBundleVersion"
         case bundleIdentifier   = "CFBundleIdentifier"

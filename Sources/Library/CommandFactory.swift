@@ -10,9 +10,9 @@ public struct CommandFactory {
     public init() { }
 
     public enum CommandType {
-        // case info
+        case show
         case list
-        case sign
+        // case sign
     }
 
     public func createCommand(ofType commandType: CommandType, withSubCommand subCommandName:String = "", 
@@ -20,17 +20,17 @@ public struct CommandFactory {
         let command: Command
 
         switch commandType {
-        // case .info:
-            // let signCommandFactory = SignCommandFactory()
-            // command = signCommandFactory.createSignCommand(for: subCommandName, arguments: arguments)
+        case .show:
+            let showCommandFactory = ShowCommandFactory()
+            command = showCommandFactory.createCommand(for: subCommandName, arguments: arguments)
 
         case .list:
             let listCommandFactory = ListCommandFactory()
             command = listCommandFactory.createListCommand(for: subCommandName, arguments: arguments)
 
-        case .sign:
-            let signCommandFactory = SignCommandFactory()
-            command = signCommandFactory.createSignCommand(for: subCommandName, arguments: arguments)
+        // case .sign:
+        //     let signCommandFactory = SignCommandFactory()
+        //     command = signCommandFactory.createSignCommand(for: subCommandName, arguments: arguments)
 
         default:
             command = UnknownCommand()    
