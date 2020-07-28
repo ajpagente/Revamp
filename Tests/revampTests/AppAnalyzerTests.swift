@@ -28,7 +28,7 @@ final class AppAnalyzerTests: XCTestCase {
     func testGetInfo() throws {
         let fileInfo = try AppAnalyzer.getInfo(from: ipaFile)
 
-        let searchString = "Identifier="
+        let searchString = "App name"
         let matchingStrings = fileInfo.filter( { (item: String) -> Bool in
             // anchored means the match should be from the beginning of the string
             let stringMatch = item.range(of: searchString, options: .anchored) 
