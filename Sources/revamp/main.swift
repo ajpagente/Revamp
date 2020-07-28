@@ -4,6 +4,4 @@
 *  MIT license, see LICENSE file for details
 */
 
-import ArgumentParser
-
 Revamp.main()

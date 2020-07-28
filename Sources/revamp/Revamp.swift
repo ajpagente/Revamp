@@ -10,25 +10,28 @@ import Library
 
 struct Revamp: ParsableCommand {
     static var configuration = CommandConfiguration(
-        abstract: "A utility that provides signing environment query capabilities and app info.",
+        abstract: "A utility that provides signing environment query capabilities and app info",
         subcommands: [List.self, Show.self])
 
+    struct Options: ParsableArguments {
+        @Flag(name: .shortAndLong, help: "Increase verbosity for informational output")
+        var verbose: Bool
+    }
 }
 
-struct Options: ParsableArguments {
-    @Flag(name: .shortAndLong, help: "Show more details in the output.")
-    var verbose: Bool
-}
+
 
 
 extension Revamp {
     struct List: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Print provisioning profiles or signing certificates.",
+        static var configuration = CommandConfiguration(
+            abstract: "Print available provisioning profiles",
             subcommands: [Profile.self])
     }
     
     struct Show: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.",
+        static var configuration = CommandConfiguration(
+            abstract: "Display information about an Apple binary",
             subcommands: [Info.self])
     }
 
@@ -44,7 +47,7 @@ extension Revamp.List {
         static var configuration = CommandConfiguration(abstract: "Print provisioning profiles.")
 
         @OptionGroup()
-        var options: Options
+        var options: Revamp.Options
 
         mutating func run() {
             let commandFactory = CommandFactory()
@@ -70,10 +73,7 @@ extension Revamp.Show {
     struct Info: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
 
-        @OptionGroup()
-        var options: Options
-
-        @Option(name: .shortAndLong, help: "The ipa or app")
+        @Argument()
         var file: String
 
         mutating func run() {
@@ -82,14 +82,8 @@ extension Revamp.Show {
 
             let status = command.execute()
             if status {
-                if options.verbose {
-                    for output in command.getOutput(.verbose) {
-                        print(output + "\n")
-                    }
-                } else {
-                    for output in command.getOutput(.simple) {
-                        print(output)
-                    }
+                for output in command.getOutput(.simple) {
+                    print(output)
                 }
             }       
         }
