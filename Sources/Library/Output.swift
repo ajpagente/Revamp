@@ -40,6 +40,7 @@ public struct OutputFormatter {
 
     private struct Layout {
         var maxCount: Int
+        var spacesCountAtBeginning: Int = 0
         var spacesCountBeforeSeparator: Int
         var spacesCountAfterSeparator: Int 
     }
@@ -49,11 +50,19 @@ public struct OutputFormatter {
     public func strings(from outputGroup: OutputGroup) -> [String] {
         if outputGroup.maxCount < 1 { return outputGroup.lines }
 
+        var lines: [String] = []
+        var spacesCountAtBeginning = 0
+        if let header = outputGroup.header {
+            lines.append(format(header: header))
+            spacesCountAtBeginning = 2
+        }
+
         let layout = Layout(maxCount: outputGroup.maxCount,
+                            spacesCountAtBeginning: spacesCountAtBeginning,
                             spacesCountBeforeSeparator: 2,
                             spacesCountAfterSeparator: 2)
         
-        var lines: [String] = []
+        
         for line in outputGroup.lines {
             let array = line.split(separator: outputGroup.separator, maxSplits: 1).map(String.init)
             lines.append(format(field: array.first!, value: array.last!, with: layout))
@@ -62,11 +71,19 @@ public struct OutputFormatter {
         return lines
     }
 
+    private func format(header: String) -> String {
+        return header.uppercased()
+    }
+
     private func format(field: String, value: String, with layout: Layout) -> String {
         let spacesCountBeforeSeparator = layout.spacesCountBeforeSeparator + layout.maxCount - field.count
         let spacesBeforeSeparator = String(repeating: " ", count: spacesCountBeforeSeparator)
         let spacesAfterSeparator = String(repeating: " ", count: layout.spacesCountAfterSeparator)
 
-        return field + spacesBeforeSeparator + separator + spacesAfterSeparator + value
+        var spacesAtBeginning = ""
+        if layout.spacesCountAtBeginning > 0 { 
+            spacesAtBeginning = String(repeating: " ", count: layout.spacesCountAtBeginning)
+        }
+        return spacesAtBeginning + field + spacesBeforeSeparator + separator + spacesAfterSeparator + value
     }
 }

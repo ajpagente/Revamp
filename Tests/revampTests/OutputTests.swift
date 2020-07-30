@@ -58,6 +58,22 @@ final class OutputTests: XCTestCase {
         XCTAssertEqual(linesActual, linesExpected)
     }
 
+    func testFormatterWithHeader() throws {
+        let linesInitial = ["App ID:Test App",
+                           "Bundle ID:com.thalesgroup.test",
+                           "Version:2.0.0"]
+        let linesExpected = ["HEADER",
+                             "  App ID     :  Test App",
+                             "  Bundle ID  :  com.thalesgroup.test",
+                             "  Version    :  2.0.0"]
+
+        let outputGroup = OutputGroup(lines: linesInitial, header: "header", separator: ":")
+        let formatter = OutputFormatter()
+        let linesActual = formatter.strings(from: outputGroup)
+        
+        XCTAssertEqual(linesActual, linesExpected)
+    }
+
     func testFormatterNewSeparator() throws {
         let linesInitial = ["App ID:Test App",
                            "Bundle ID:com.thalesgroup.test",
@@ -95,8 +111,9 @@ final class OutputTests: XCTestCase {
         ("testMaxCountWithDuplicateSeparator", testMaxCountWithDuplicateSeparator),
         ("testMaxCountWrongSeparator"        , testMaxCountWrongSeparator),
         ("testFormatter"                     , testFormatter),
+        ("testFormatterWithHeader"           , testFormatterWithHeader),
         ("testFormatterNewSeparator"         , testFormatterNewSeparator),
-        ("testFormatterWrongSeparator"       ``, testFormatterWrongSeparator),
+        ("testFormatterWrongSeparator"       , testFormatterWrongSeparator),
     ]
 
 }
