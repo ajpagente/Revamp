@@ -57,12 +57,15 @@ public struct ShowCommand: Command {
             case .info:
                 do {
                     let appFile = try File(path: arguments["file"]!)
-                    let info    = try AppAnalyzer.getInfo(from: appFile)
+                    let groups  = try AppAnalyzer.getInfo(from: appFile)
 
-
-
-                    self.output = CommandOutput(simple: info, 
-                                                verbose: info)
+                    let formatter = OutputFormatter()
+                    let appInfo  = formatter.strings(from: groups.first!)
+                    let signInfo = formatter.strings(from: groups.last!)
+                    var combiInfo = appInfo
+                    combiInfo.append(contentsOf: signInfo)
+                    self.output = CommandOutput(simple: combiInfo, 
+                                                verbose: combiInfo)
                 } catch {
                     self.output = CommandOutput(simple:  ["Error getting file info!!!"], 
                                                 verbose: ["Error getting file info!!!"])

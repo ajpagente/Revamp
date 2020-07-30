@@ -26,10 +26,15 @@ final class AppAnalyzerTests: XCTestCase {
     }
 
     func testGetInfo() throws {
-        let fileInfo = try AppAnalyzer.getInfo(from: ipaFile)
+        let groups = try AppAnalyzer.getInfo(from: ipaFile)
 
-        let searchString = "App name"
-        let matchingStrings = fileInfo.filter( { (item: String) -> Bool in
+        XCTAssertTrue(groups.count == 2)
+
+        let searchString = "App Name"
+
+        let appGroup = groups.first!
+        let appInfo = appGroup.lines
+        let matchingStrings = appInfo.filter( { (item: String) -> Bool in
             // anchored means the match should be from the beginning of the string
             let stringMatch = item.range(of: searchString, options: .anchored) 
             return stringMatch != nil ? true : false

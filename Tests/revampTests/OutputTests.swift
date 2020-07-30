@@ -67,9 +67,9 @@ final class OutputTests: XCTestCase {
                            "Bundle ID:com.thalesgroup.test",
                            "Version:2.0.0"]
         let linesExpected = ["HEADER",
-                             "  App ID     :  Test App",
-                             "  Bundle ID  :  com.thalesgroup.test",
-                             "  Version    :  2.0.0"]
+                             "   App ID     :  Test App",
+                             "   Bundle ID  :  com.thalesgroup.test",
+                             "   Version    :  2.0.0"]
 
         let outputGroup = OutputGroup(lines: linesInitial, header: "header", separator: ":")
         let formatter = OutputFormatter()

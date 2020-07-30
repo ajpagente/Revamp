@@ -10,7 +10,8 @@ public struct OutputGroup {
     public var lines: [String]
     public var header: String?
     public var separator: Character
-
+    public var overrideMaxCount: Int
+    
     /// Returns the number of characters of the longest String in the array.
     /// The character is counted from the beginning of the String until the first occurence of the separator.
     public var maxCount: Int {
@@ -22,13 +23,15 @@ public struct OutputGroup {
             let fieldNameCount = fieldName.count
             if  fieldNameCount > maxCount { maxCount = fieldNameCount }
         }    
+        if maxCount < overrideMaxCount { maxCount = overrideMaxCount }
         return maxCount
     }
 
-    public init(lines: [String], header: String?, separator: Character = ":") {
+    public init(lines: [String], header: String?, separator: Character = ":", overrideMaxCount: Int = 0) {
         self.lines = lines
         self.header = header
         self.separator = separator
+        self.overrideMaxCount = overrideMaxCount
     }
 }
 
@@ -59,7 +62,7 @@ public struct OutputFormatter {
         var spacesCountAtBeginning = 0
         if let header = outputGroup.header {
             lines.append(format(header: header))
-            spacesCountAtBeginning = 2
+            spacesCountAtBeginning = 3
         }
 
         let layout = Layout(maxCount: outputGroup.maxCount,
