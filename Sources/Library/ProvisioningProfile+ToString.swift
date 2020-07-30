@@ -15,7 +15,7 @@ public extension ProvisioningProfile {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM dd,yyyy"
         
-        let lines = ["Profile name: \(name)",
+        let lines = ["Profile Name: \(name)",
                      "UUID: \(UUID)",
                      "App ID Name: \(appIDName)",
                      "Team Name: \(teamName)",
