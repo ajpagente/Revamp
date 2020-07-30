@@ -51,11 +51,15 @@ final class OutputTests: XCTestCase {
                              "Bundle ID  :  com.thalesgroup.test",
                              "Version    :  2.0.0"]
 
+        let linesExpectedString = "App ID     :  Test App\nBundle ID  :  com.thalesgroup.test\nVersion    :  2.0.0"
+
         let outputGroup = OutputGroup(lines: linesInitial, header: nil, separator: ":")
         let formatter = OutputFormatter()
         let linesActual = formatter.strings(from: outputGroup)
-        
         XCTAssertEqual(linesActual, linesExpected)
+
+        let linesActualString = formatter.string(from: outputGroup)
+        XCTAssertEqual(linesActualString, linesExpectedString)
     }
 
     func testFormatterWithHeader() throws {

@@ -47,6 +47,11 @@ public struct OutputFormatter {
 
     public init(){}
 
+    public func string(from outputGroup: OutputGroup) -> String {
+
+        return strings(from: outputGroup).joined(separator: "\n")
+    }
+   
     public func strings(from outputGroup: OutputGroup) -> [String] {
         if outputGroup.maxCount < 1 { return outputGroup.lines }
 

@@ -15,14 +15,13 @@ public extension ProvisioningProfile {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM dd,yyyy"
         
-        return """
-        Profile name: \(name)
-        UUID: \(UUID)
-        App ID name: \(appIDName)
-        Team name: \(teamName)
-        Expiry: \(dateFormatter.string(from: expirationDate))
-        """
-
+        let lines = ["Profile name: \(name)",
+                     "UUID: \(UUID)",
+                     "App ID Name: \(appIDName)",
+                     "Team Name: \(teamName)",
+                     "Expiry: \(dateFormatter.string(from: expirationDate))"]
+        
+        let outputGroup = OutputGroup(lines: lines, header: nil, separator: ":")
+        return OutputFormatter().string(from: outputGroup)
     }
-
 }
