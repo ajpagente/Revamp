@@ -10,12 +10,12 @@ import Library
 
 struct Revamp: ParsableCommand {
     static var configuration = CommandConfiguration(
-        abstract: "A utility that provides signing environment query capabilities and app info",
+        abstract: "A utility that provides signing environment query capabilities and app info.",
         subcommands: [List.self, Show.self])
 
     struct Options: ParsableArguments {
-        @Flag(name: .shortAndLong, help: "Increase verbosity for informational output")
-        var verbose: Bool
+        @Flag(name: .shortAndLong, help: "Increase verbosity for informational output.")
+        var verbose = false
     }
 }
 
