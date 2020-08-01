@@ -80,10 +80,6 @@ final class ProvisioningProfileTests: XCTestCase {
         let profile = try ProvisioningProfile.parse(from: data)
 
         XCTAssertTrue(profile!.developerCertificates.count != 0) 
-        print(profile!.developerCertificates.count)
-        print(profile!.developerCertificates.first!)
-        print(profile!.developerCertificates.last!)
-        // print(profile!.developerCertificates[2])
     }
 
     func testWriteEntitlementsPlist() throws {

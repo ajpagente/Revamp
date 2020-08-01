@@ -28,7 +28,7 @@ final class AppAnalyzerTests: XCTestCase {
     func testGetInfo() throws {
         let groups = try AppAnalyzer.getInfo(from: ipaFile)
 
-        XCTAssertTrue(groups.count == 2)
+        XCTAssertTrue(groups.count == 4)
 
         let searchString = "App Name"
 

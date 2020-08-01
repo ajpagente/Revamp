@@ -16,8 +16,6 @@ final class revampTests: XCTestCase {
 
         if let data = try? Data(contentsOf: testProfile) {
             let profile = try ProvisioningProfile.parse(from: data)
-            print(profile!.UUID)     
-
         }  
     }
 

@@ -34,10 +34,7 @@ public struct ProvisioningProfile: Codable {
     public var applicationIdentifierPrefixes: [String]
     public var creationDate:                  Date
     public var platforms:                     [String]
-    
-    /// The array of Base64 encoded developer certificates
     public var developerCertificates:         [BaseCertificate]
-
     public var entitlements:                  [String: PropertyListDictionaryValue]
     public var expirationDate:                Date
     public var name:                          String

@@ -35,8 +35,11 @@ public struct AppAnalyzer {
         let profileGroup = OutputGroup(lines: profileInfo, header: "Profile Info", 
                                     separator: ":", overrideMaxCount: appGroup.maxCount)
         
-        let entitlements = try getEntitlements(from: appFolders.first!.path)
-        return [appGroup, signGroup, profileGroup]
+        let entitlementsInfo = try getEntitlements(from: appFolders.first!.path)
+        let entitlementsGroup = OutputGroup(lines: entitlementsInfo, header: "Entitlements", 
+                                    separator: ":", overrideMaxCount: appGroup.maxCount)
+
+        return [appGroup, signGroup, profileGroup, entitlementsGroup]
     }
 
     private static func getSignInfo(from appPath: String) throws -> [String] {
@@ -92,9 +95,10 @@ public struct AppAnalyzer {
         let data = try Data(contentsOf: profileURL)
         let profile = try ProvisioningProfile.parse(from: data)
 
-        let entitlements = profile!.entitlements
+        let entitlements = Entitlements(profile!.entitlements)
         var info: [String] = []
-        
+        info.append("Debuggable: \(entitlements.debuggable)")
+        info.append("Push Enabled: \(entitlements.pushEnabled)")
         return info
     }
 
