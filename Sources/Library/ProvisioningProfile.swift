@@ -16,7 +16,7 @@ public struct ProvisioningProfile: Codable {
         case applicationIdentifierPrefixes = "ApplicationIdentifierPrefix"
         case creationDate                  = "CreationDate"
         case platforms                     = "Platform"
-        // case developerCertificates         = "DeveloperCertificates"
+        case developerCertificates         = "DeveloperCertificates"
         case entitlements                  = "Entitlements"
         case expirationDate                = "ExpirationDate"
         case name                          = "Name"
@@ -34,6 +34,10 @@ public struct ProvisioningProfile: Codable {
     public var applicationIdentifierPrefixes: [String]
     public var creationDate:                  Date
     public var platforms:                     [String]
+    
+    /// The array of Base64 encoded developer certificates
+    public var developerCertificates: [BaseCertificate]
+
     public var entitlements:                  [String: PropertyListDictionaryValue]
     public var expirationDate:                Date
     public var name:                          String
