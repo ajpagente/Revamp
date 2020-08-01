@@ -36,7 +36,7 @@ public struct ProvisioningProfile: Codable {
     public var platforms:                     [String]
     
     /// The array of Base64 encoded developer certificates
-    public var developerCertificates: [BaseCertificate]
+    public var developerCertificates:         [BaseCertificate]
 
     public var entitlements:                  [String: PropertyListDictionaryValue]
     public var expirationDate:                Date

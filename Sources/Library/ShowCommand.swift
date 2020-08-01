@@ -59,11 +59,11 @@ public struct ShowCommand: Command {
                     let appFile = try File(path: arguments["file"]!)
                     let groups  = try AppAnalyzer.getInfo(from: appFile)
 
+                    var combiInfo:[String] = []
                     let formatter = OutputFormatter()
-                    let appInfo  = formatter.strings(from: groups.first!)
-                    let signInfo = formatter.strings(from: groups.last!)
-                    var combiInfo = appInfo
-                    combiInfo.append(contentsOf: signInfo)
+                    for group in groups {
+                        combiInfo.append(contentsOf: formatter.strings(from: group))
+                    }
                     self.output = CommandOutput(simple: combiInfo, 
                                                 verbose: combiInfo)
                 } catch {

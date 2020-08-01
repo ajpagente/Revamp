@@ -108,7 +108,6 @@ public struct BaseCertificate: Codable, Equatable {
     }
     
     // MARK: - Convenience
-    
     public var base64Encoded: String {
         return data.base64EncodedString()
     }
