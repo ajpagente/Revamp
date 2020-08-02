@@ -9,8 +9,12 @@ import Foundation
 import Library
 
 struct Revamp: ParsableCommand {
+
     static var configuration = CommandConfiguration(
-        abstract: "A utility that provides signing environment query capabilities and app info.",
+        abstract: """
+        revamp v\(Version.value)
+        A program that provides signing environment query capabilities.
+        """,
         subcommands: [List.self, Show.self])
 
     struct Options: ParsableArguments {
@@ -18,9 +22,6 @@ struct Revamp: ParsableCommand {
         var verbose = false
     }
 }
-
-
-
 
 extension Revamp {
     struct List: ParsableCommand {
