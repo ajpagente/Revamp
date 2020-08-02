@@ -74,8 +74,13 @@ extension Revamp.Show {
     struct Info: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
 
-        @Argument()
-        var file: String
+        @Argument  var file: String
+
+        mutating func validate() throws {
+            if !(file.hasSuffix(".ipa") || file.hasSuffix(".mobileprovision")) {
+                throw ValidationError("A file must be an ipa or a mobileprovision.")
+            }
+        }
 
         mutating func run() {
             let commandFactory = CommandFactory()
