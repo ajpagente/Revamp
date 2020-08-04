@@ -22,6 +22,25 @@ public struct ShowCommandFactory {
     }
 }
 
+// public struct ShowProfileInfoCommand: Command {
+//     public func getError() -> [String] {
+//         return errorReason.simple
+//     }
+
+//     public func getOutput(_ type: CommandOutputType) -> [String] {
+//         switch type {
+//             case .simple:
+//                 return output.simple
+//             case .verbose:
+//                 return output.verbose
+//         } 
+//     }
+
+//     public mutating func execute() -> Bool {
+
+//     }
+// }
+
 public struct ShowCommand: Command {
     private var errorReason = CommandErrorReason(simple: [])
     private var output      = CommandOutput(simple: [], verbose: [])

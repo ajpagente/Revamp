@@ -6,10 +6,12 @@
 
 import Foundation
 
-public struct CLI {
-    let command:    String
-    let subCommand: String?
-    let arguments: [String:String]
+public struct CommandInput { 
+    let arguments: [String]      = []
+    let options: [String:String] = [:]
+    let flags: [String]          = []
+    // let arguments: [String:String]
+    public init() {}
 }
 
 public enum CommmandError: Error {
@@ -23,8 +25,23 @@ public enum CommandOutputType {
 }
 
 public struct CommandOutput {
-    var simple: [String] = []
-    var verbose: [String] = []
+    public var simple: [String]
+    public var verbose: [String]
+}
+
+public struct CommandOutput2 {
+    public let simple: [String]
+    public let verbose: [String]
+
+    public init(simple: [String], verbose: [String]) {
+        self.simple  = simple
+        self.verbose = verbose
+    }
+
+    public init() {
+        self.init(simple: ["Unknown command"],
+                  verbose: ["Unknown command"])
+    }
 }
 
 public struct CommandErrorReason {
