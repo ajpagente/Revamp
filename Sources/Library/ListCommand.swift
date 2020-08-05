@@ -6,33 +6,33 @@
 
 import Foundation
 
-public struct ListCommand: Command {
-    private var errorReason = CommandErrorReason(simple: [])
-    private var output      = CommandOutput(simple: [], verbose: [])
-    private var path:        URL  
-
-    public init(path: URL) {
-        self.path = path
-    }
-    
-    public func getError() -> [String] {
-        return errorReason.simple
+public class ListCommand2: Command2 {
+    public override class var assignedName: String {
+        return "list"
     }
 
-    public func getOutput(_ type: CommandOutputType) -> [String] {
-        switch type {
-            case .simple:
-                return output.simple
-            case .verbose:
-                return output.verbose
-        } 
+    public override func execute() -> CommandOutput2 {
+        let subCommand = input.subCommand
+
+        switch subCommand {
+            case "profile":
+                return listDefaultProfiles()
+            default:
+                return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+        }
     }
 
-    public mutating func execute() -> Bool {
-        
+    private func listDefaultProfiles() -> CommandOutput2 {
+        var basicOutput: [String] = []
+        var isVerbose = false
+        if input.flags.contains("verbose") { isVerbose = true }
+
+        let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
+        let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
+
         do {
             let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(at: path, 
+            let urls = try fileManager.contentsOfDirectory(at: profileURL, 
                                                            includingPropertiesForKeys: [],
                                                            options: [ .skipsSubdirectoryDescendants,
                                                                       .skipsHiddenFiles ] )
@@ -40,15 +40,19 @@ public struct ListCommand: Command {
             for url in urls {
                 if let data = try? Data(contentsOf: url) {
                     if let profile = try ProvisioningProfile.parse(from: data) {
-                        output.simple.append(profile.simpleOutput)
-                        output.verbose.append(profile.verboseOutput)
+                        if isVerbose {
+                            basicOutput.append(profile.verboseOutput)
+                            basicOutput.append("\n")
+                        } else {
+                            basicOutput.append(profile.simpleOutput)
+                        }
                      }
                 }  
             }
         } catch {
-            return false
+            return CommandOutput2(errorCode: .profileParsingError, basic: ["Error when parsing provisioning profiles."])
         }
-        
-        return true
+
+        return CommandOutput2(basic: basicOutput)
     }
 }

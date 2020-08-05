@@ -21,12 +21,13 @@ struct Revamp: ParsableCommand {
         @Flag(name: .shortAndLong, help: "Increase verbosity for informational output.")
         var verbose = false
     }
+
 }
 
 extension Revamp {
     struct List: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Print available provisioning profiles",
+            abstract: "Display available provisioning profiles",
             subcommands: [Profile.self])
     }
     
@@ -45,26 +46,21 @@ extension Revamp {
 
 extension Revamp.List {
     struct Profile: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Print provisioning profiles.")
+        static var configuration = CommandConfiguration(abstract: "Enumerate provisioning profiles in the default folder.")
 
         @OptionGroup()
         var options: Revamp.Options
 
         mutating func run() {
-            let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand(ofType: .list, withSubCommand: "profile", arguments: ["":""])
+            let engine = Engine.initialize()
+            var flags: [String] = []
+            if options.verbose { flags.append("verbose")}
 
-            let status = command.execute()
-            if status {
-                if options.verbose {
-                    for output in command.getOutput(.verbose) {
-                        print(output + "\n")
-                    }
-                } else {
-                    for output in command.getOutput(.simple) {
-                        print(output)
-                    }
-                }
+            let input  = CommandInput(subCommand: "profile", arguments: [], options: [:], flags: flags)
+            let output = engine.execute("list", input: input)
+
+            for output in output.basic {
+                print(output)
             }       
         }
     }
@@ -173,7 +169,12 @@ extension Revamp.Show {
 //     }
 // }
 
-
+fileprivate struct Engine {
+    fileprivate static func initialize() -> CommandEngine {
+        let listHandler = CommandHandler(commandType: ListCommand2.self)
+        return CommandEngine(handler: listHandler)
+    }
+}
 
 // Ref: https://github.com/apple/swift-argument-parser/blob/master/Documentation/03%20Commands%20and%20Subcommands.md
 

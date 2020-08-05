@@ -7,11 +7,18 @@
 import Foundation
 
 public struct CommandInput {
-    let subCommand: String       = "" 
-    let arguments: [String]      = []
-    let options: [String:String] = [:]
-    let flags: [String]          = []
-    public init() {}
+    let subCommand: String
+    let arguments:  [String]
+    let options:    [String:String]
+    let flags:      [String]
+
+    public init(subCommand: String, arguments: [String], 
+                options: [String:String], flags: [String]) {
+        self.subCommand = subCommand
+        self.arguments  = arguments
+        self.options    = options
+        self.flags      = flags 
+    }
 }
 
 public enum CommmandError: Error {
@@ -37,6 +44,7 @@ public enum CommandStatus {
 public enum CommandErrorCode {
     case fileNotFound
     case invalidArgument
+    case profileParsingError
     case unknownCommand
     case unknownError
     case noError
@@ -79,7 +87,7 @@ open class Command2 {
     }
 
     public convenience init() {
-        let input = CommandInput()
+        let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         self.init(input: input)
     }
 

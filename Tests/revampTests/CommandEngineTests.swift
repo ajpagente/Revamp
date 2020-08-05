@@ -16,7 +16,7 @@ final class CommandEngineTests: XCTestCase {
 
     func testEngineOneHandler() throws {
         let engine  = CommandEngine(handler: handler1)
-        let input   = CommandInput()
+        let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("first", input: input)
 
         let expected = CommandOutput2(basic: ["first executed"])
@@ -25,7 +25,7 @@ final class CommandEngineTests: XCTestCase {
 
     func testEngineOneHandlerUnknownCommand() throws {
         let engine  = CommandEngine(handler: handler1)
-        let input   = CommandInput()
+        let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("abcd", input: input)
 
         let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
@@ -35,7 +35,7 @@ final class CommandEngineTests: XCTestCase {
     func testEngineTwoHandlers() throws {
         handler1.next = handler2
         let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput()
+        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         var actual   = engine.execute("first", input: input)
         var expected = CommandOutput2(basic: ["first executed"])
@@ -49,7 +49,7 @@ final class CommandEngineTests: XCTestCase {
     func testEngineTwoHandlersUnknownCommand() throws {
         handler1.next = handler2
         let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput()
+        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         let actual   = engine.execute("xyz", input: input)
         let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
@@ -60,7 +60,7 @@ final class CommandEngineTests: XCTestCase {
         handler1.next = handler2
         handler2.next = handler3
         let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput()
+        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         var actual   = engine.execute("first", input: input)
         var expected = CommandOutput2(basic: ["first executed"])
@@ -79,7 +79,7 @@ final class CommandEngineTests: XCTestCase {
         handler1.next = handler2
         handler2.next = handler3
         let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput()
+        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         let actual   = engine.execute("xyz", input: input)
         let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])

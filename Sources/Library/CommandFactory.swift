@@ -11,7 +11,7 @@ public struct CommandFactory {
 
     public enum CommandType {
         case show
-        case list
+        // case list
         // case sign
     }
 
@@ -24,9 +24,9 @@ public struct CommandFactory {
             let showCommandFactory = ShowCommandFactory()
             command = showCommandFactory.createCommand(for: subCommandName, arguments: arguments)
 
-        case .list:
-            let listCommandFactory = ListCommandFactory()
-            command = listCommandFactory.createListCommand(for: subCommandName, arguments: arguments)
+        // case .list:
+        //     let listCommandFactory = ListCommandFactory()
+        //     command = listCommandFactory.createListCommand(for: subCommandName, arguments: arguments)
 
         // case .sign:
         //     let signCommandFactory = SignCommandFactory()
