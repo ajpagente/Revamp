@@ -6,11 +6,11 @@
 
 import Foundation
 
-public struct CommandInput { 
+public struct CommandInput {
+    let subCommand: String       = "" 
     let arguments: [String]      = []
     let options: [String:String] = [:]
     let flags: [String]          = []
-    // let arguments: [String:String]
     public init() {}
 }
 
@@ -29,23 +29,63 @@ public struct CommandOutput {
     public var verbose: [String]
 }
 
-public struct CommandOutput2 {
-    public let simple: [String]
-    public let verbose: [String]
+public enum CommandStatus {
+    case success
+    case fail
+}
 
-    public init(simple: [String], verbose: [String]) {
-        self.simple  = simple
-        self.verbose = verbose
+public enum CommandErrorCode {
+    case fileNotFound
+    case invalidArgument
+    case unknownCommand
+    case unknownError
+    case noError
+}
+
+public struct CommandOutput2 {
+    public var status: CommandStatus
+    public var errorCode: CommandErrorCode
+    public var basic  = [""]
+    public var detail = [""]
+
+    public init(basic: [String]) {
+        self.status    = .success
+        self.errorCode = .noError
+        self.basic     = basic
     }
 
-    public init() {
-        self.init(simple: ["Unknown command"],
-                  verbose: ["Unknown command"])
+    public init(errorCode: CommandErrorCode, basic: [String]) {
+        self.status    = .fail
+        self.errorCode = errorCode
+        self.basic     = basic
     }
 }
 
 public struct CommandErrorReason {
     var simple: [String] = []
+}
+
+open class Command2 {
+    open class var assignedName: String {
+        return "unknown"
+    }
+
+    public final let name: String
+    public final let input: CommandInput
+
+    public required init(input: CommandInput) {
+        self.name = type(of: self).assignedName
+        self.input = input
+    }
+
+    public convenience init() {
+        let input = CommandInput()
+        self.init(input: input)
+    }
+
+    open func execute() -> CommandOutput2 {
+        return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+    }
 }
 
 public protocol Command {

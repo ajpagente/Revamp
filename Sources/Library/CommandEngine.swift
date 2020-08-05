@@ -6,29 +6,6 @@
 
 import Foundation
 
-open class Command2 {
-    open class var assignedName: String {
-        return "unknown"
-    }
-
-    public final let name: String
-    public final let input: CommandInput
-
-    public required init(input: CommandInput) {
-        self.name = type(of: self).assignedName
-        self.input = input
-    }
-
-    public convenience init() {
-        let input = CommandInput()
-        self.init(input: input)
-    }
-
-    open func execute() -> CommandOutput2 {
-        return CommandOutput2()
-    }
-}
-
 public class CommandEngine {
     public let commandHandler: CommandHandler
 
@@ -39,8 +16,7 @@ public class CommandEngine {
     public func execute(_ name: String, input: CommandInput) -> CommandOutput2 {
         guard let command = commandHandler.handleCommand(name, input: input) 
             else {
-                print("Unknown command")
-                return CommandOutput2()
+                return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
         }
 
         return command.execute()
