@@ -51,10 +51,15 @@ extension Revamp.List {
         @OptionGroup()
         var options: Revamp.Options
 
+        @Flag(name: .customLong("use-color"), help: "Apply color to output.")
+        var colorize = false
+
         mutating func run() {
             let engine = Engine.initialize()
             var flags: [String] = []
             if options.verbose { flags.append("verbose")}
+            flags.append("colorize") 
+            // if colorize { flags.append("colorize") }
 
             let input  = CommandInput(subCommand: "profile", arguments: [], options: [:], flags: flags)
             let output = engine.execute("list", input: input)

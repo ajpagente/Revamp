@@ -91,6 +91,20 @@ final class ProvisioningProfileTests: XCTestCase {
         XCTAssertTrue(folder.containsFile(named: "entitlements.plist"))
     }
 
+    func testIsExpired() throws {
+        let data = try Data(contentsOf: testProfileURL)
+        var profile = try ProvisioningProfile.parse(from: data)
+
+        profile!.expirationDate = Date(timeIntervalSince1970: 60 * 60 * 5)
+        XCTAssertTrue(profile!.isExpired)
+
+        profile!.expirationDate = Date()
+        XCTAssertTrue(profile!.isExpired)
+
+        profile!.expirationDate = Date().addingTimeInterval(60 * 60 * 5)
+        XCTAssertFalse(profile!.isExpired)
+    }
+
     private func printFileContent(of file: File) throws {
         print(try file.readAsString())
     }

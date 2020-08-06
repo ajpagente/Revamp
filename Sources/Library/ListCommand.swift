@@ -24,8 +24,10 @@ public class ListCommand2: Command2 {
 
     private func listDefaultProfiles() -> CommandOutput2 {
         var basicOutput: [String] = []
-        var isVerbose = false
-        if input.flags.contains("verbose") { isVerbose = true }
+        var verbose = false
+        var colorize  = false
+        if input.flags.contains("verbose") { verbose = true }
+        if input.flags.contains("colorize") { colorize = true }
 
         let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
         let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
@@ -39,8 +41,9 @@ public class ListCommand2: Command2 {
 
             for url in urls {
                 if let data = try? Data(contentsOf: url) {
-                    if let profile = try ProvisioningProfile.parse(from: data) {
-                        if isVerbose {
+                    if var profile = try ProvisioningProfile.parse(from: data) {
+                        profile.colorize = colorize
+                        if verbose {
                             basicOutput.append(profile.verboseOutput)
                             basicOutput.append("\n")
                         } else {

@@ -45,6 +45,13 @@ public struct ProvisioningProfile: Codable {
     public var UUID:                          String
     public var version:                       Int
 
+    public var isExpired: Bool {
+        let now = Date()
+        return expirationDate <= now
+    }
+
+    public var colorize = false
+
 }
 
 public extension ProvisioningProfile {
