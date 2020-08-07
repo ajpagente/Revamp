@@ -8,25 +8,6 @@ import Foundation
 import Files
 
 
-// public struct ShowProfileInfoCommand: Command {
-//     public func getError() -> [String] {
-//         return errorReason.simple
-//     }
-
-//     public func getOutput(_ type: CommandOutputType) -> [String] {
-//         switch type {
-//             case .simple:
-//                 return output.simple
-//             case .verbose:
-//                 return output.verbose
-//         } 
-//     }
-
-//     public mutating func execute() -> Bool {
-
-//     }
-// }
-
 public class ShowCommand: Command2 {
     public override class var assignedName: String {
         return "show"
@@ -49,6 +30,8 @@ public class ShowCommand: Command2 {
         switch file.extension {
             case "ipa":
                 return getIpaInfo()
+            case "mobileprovision":
+                return getProfileInfo()
             default:
                 return CommandOutput2(errorCode: .invalidArgument, basic: ["File type not supported."])
         }
@@ -69,6 +52,26 @@ public class ShowCommand: Command2 {
             basicOutput = combiInfo
         } catch {
             return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing ipa."])
+        }
+
+        return CommandOutput2(basic: basicOutput)
+    }
+
+    private func getProfileInfo() -> CommandOutput2 {
+        var basicOutput: [String] = []
+
+        do {
+            let profileFile = try File(path: input.arguments.first!)
+            let groups  = try ProfileAnalyzer.getInfo(from: profileFile)
+
+            var combiInfo:[String] = []
+            let formatter = OutputFormatter()
+            for group in groups {
+                combiInfo.append(contentsOf: formatter.strings(from: group))
+            }
+            basicOutput = combiInfo
+        } catch {
+            return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
         }
 
         return CommandOutput2(basic: basicOutput)
