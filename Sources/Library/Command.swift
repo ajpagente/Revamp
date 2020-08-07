@@ -44,6 +44,7 @@ public enum CommandStatus {
 public enum CommandErrorCode {
     case fileNotFound
     case invalidArgument
+    case ipaParsingError
     case profileParsingError
     case unknownCommand
     case unknownError

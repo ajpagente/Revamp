@@ -58,8 +58,7 @@ extension Revamp.List {
             let engine = Engine.initialize()
             var flags: [String] = []
             if options.verbose { flags.append("verbose")}
-            flags.append("colorize") 
-            // if colorize { flags.append("colorize") }
+            if colorize { flags.append("colorize") }
 
             let input  = CommandInput(subCommand: "profile", arguments: [], options: [:], flags: flags)
             let output = engine.execute("list", input: input)
@@ -84,15 +83,14 @@ extension Revamp.Show {
         }
 
         mutating func run() {
-            let commandFactory = CommandFactory()
-            var command = commandFactory.createCommand(ofType: .show, withSubCommand: "info", arguments: ["file":file])
+            let engine = Engine.initialize()
 
-            let status = command.execute()
-            if status {
-                for output in command.getOutput(.simple) {
-                    print(output)
-                }
-            }       
+            let input  = CommandInput(subCommand: "info", arguments: [file], options: [:], flags: [])
+            let output = engine.execute("show", input: input)
+
+            for output in output.basic {
+                print(output)
+            }      
         }
     }
 }
@@ -177,6 +175,8 @@ extension Revamp.Show {
 fileprivate struct Engine {
     fileprivate static func initialize() -> CommandEngine {
         let listHandler = CommandHandler(commandType: ListCommand2.self)
+        let showHandler = CommandHandler(commandType: ShowCommand.self)
+        listHandler.next = showHandler
         return CommandEngine(handler: listHandler)
     }
 }
