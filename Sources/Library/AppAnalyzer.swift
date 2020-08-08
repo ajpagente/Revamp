@@ -39,7 +39,8 @@ public struct AppAnalyzer {
         let entitlementsGroup = OutputGroup(lines: entitlementsInfo, header: "Entitlements", 
                                     separator: ":", overrideMaxCount: appGroup.maxCount)
 
-        return [appGroup, signGroup, profileGroup, entitlementsGroup]
+        let outputGroups = OutputGroups([appGroup, signGroup, profileGroup, entitlementsGroup])
+        return outputGroups.groups
     }
 
     private static func getSignInfo(from appPath: String) throws -> [String] {

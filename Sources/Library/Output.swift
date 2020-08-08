@@ -35,6 +35,35 @@ public struct OutputGroup {
     }
 }
 
+public struct OutputGroups {
+    public var groups: [OutputGroup]
+
+    public init(_ groups: [OutputGroup]) {
+        self.groups = groups
+        setOverallMaxCount()
+    }
+
+    /// Returns the highest maxCount among the groups
+    private func getOverallMaxCount() -> Int {
+        var maxCount = 0
+        for group in groups {
+            if group.maxCount > maxCount { maxCount = group.maxCount }
+        }
+        return maxCount
+    }
+
+    // Overrides the maxCount in the groups with the overall maxCount
+    private mutating func setOverallMaxCount() {
+        let maxCount = getOverallMaxCount()
+        var newGroups: [OutputGroup] = []
+        for var group in groups {
+            group.overrideMaxCount = maxCount
+            newGroups.append(group)
+        }
+        groups = newGroups
+    }
+}
+
 public struct OutputFormatter {
     // A character that indicates the separation of the field from the value.
     // The first matching character from the beginning of the String is taken

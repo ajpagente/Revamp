@@ -58,6 +58,7 @@ public struct ProfileAnalyzer {
             groups.append(OutputGroup(lines: provisionedDevices, header: "Provisioned Devices", separator: ":"))
         }
 
-        return groups
+        let outputGroups = OutputGroups(groups)
+        return outputGroups.groups
     }
 }
