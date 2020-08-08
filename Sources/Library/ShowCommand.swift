@@ -59,10 +59,17 @@ public class ShowCommand: Command2 {
 
     private func getProfileInfo() -> CommandOutput2 {
         var basicOutput: [String] = []
+        var groups: [OutputGroup] = []
+        var verbose = false
+        if input.flags.contains("verbose") { verbose = true }
 
         do {
             let profileFile = try File(path: input.arguments.first!)
-            let groups  = try ProfileAnalyzer.getInfo(from: profileFile)
+            if verbose { 
+                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile) 
+            } else {
+                groups  = try ProfileAnalyzer.getLimitedInfo(from: profileFile)
+            }
 
             var combiInfo:[String] = []
             let formatter = OutputFormatter()

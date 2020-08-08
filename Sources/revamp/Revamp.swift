@@ -74,6 +74,9 @@ extension Revamp.Show {
     struct Info: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
 
+        @OptionGroup()
+        var options: Revamp.Options
+
         @Argument var file: String
 
         mutating func validate() throws {
@@ -84,8 +87,10 @@ extension Revamp.Show {
 
         mutating func run() {
             let engine = Engine.initialize()
+            var flags: [String] = []
+            if options.verbose { flags.append("verbose")}
 
-            let input  = CommandInput(subCommand: "info", arguments: [file], options: [:], flags: [])
+            let input  = CommandInput(subCommand: "info", arguments: [file], options: [:], flags: flags)
             let output = engine.execute("show", input: input)
 
             for output in output.basic {
