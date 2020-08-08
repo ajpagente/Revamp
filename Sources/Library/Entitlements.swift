@@ -7,19 +7,21 @@
 import Foundation
 
 public struct Entitlements {
-    public var debuggable = false
-    public var applicationIdentifier = ""
-    public var teamIdentifier = ""
-    public var apsEnvironment = ""
-    public var pushEnabled = false
+    public var applicationIdentifier: String = ""
+    public var teamIdentifier: String  = ""
+    public var apsEnvironment: String  = ""
+    public var debuggable: Bool  = false
+    public var pushEnabled: Bool {
+        if apsEnvironment != "" { return true } 
+        else { return false }
+    }
 
     public init(_ entitlements: [String: PropertyListDictionaryValue]) {
-        if entitlements["get-task-allow"] == .bool(true) { debuggable = true }
         applicationIdentifier = stringify(entitlements["application-identifier"]!)
         teamIdentifier = stringify(entitlements["com.apple.developer.team-identifier"]!)
-
         apsEnvironment = stringify(entitlements["aps-environment"] ?? .string(""))
-        if apsEnvironment != "" { pushEnabled = true }
+
+        if entitlements["get-task-allow"] == .bool(true) { debuggable = true }
     }
 
     private func stringify(_ aString: PropertyListDictionaryValue) -> String {

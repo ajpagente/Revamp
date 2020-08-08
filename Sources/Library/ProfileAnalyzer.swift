@@ -10,7 +10,7 @@ import Files
 public struct ProfileAnalyzer {
     public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
         let groups = try getInfo(from: file)
-        return Array(groups.prefix(2))
+        return Array(groups.prefix(3))
     }
 
     public static func getAllInfo(from file: File) throws -> [OutputGroup] {
@@ -33,6 +33,12 @@ public struct ProfileAnalyzer {
         info.append("Team Name: \(profile!.teamName)")
         info.append("Profile Expiry: \(dateFormatter.string(from: profile!.expirationDate))")
         groups.append(OutputGroup(lines: info, header: "Info", separator: ":"))
+
+        var entitlementsInfo: [String] = []
+        let entitlements = Entitlements(profile!.entitlements)
+        entitlementsInfo.append("Debuggable: \(entitlements.debuggable)")
+        entitlementsInfo.append("Push enabled: \(entitlements.pushEnabled)")
+        groups.append(OutputGroup(lines: entitlementsInfo, header: "Entitlements", separator: ":"))
 
         var certificateInfo: [String] = []
         for (n, certificate) in profile!.developerCertificates.enumerated() {
