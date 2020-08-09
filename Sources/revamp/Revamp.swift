@@ -48,19 +48,25 @@ extension Revamp.List {
     struct Profile: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Enumerate provisioning profiles in the default folder.")
 
+        @Option(name: .shortAndLong, help: "The folder to enumerate. This overrides the default folder.")
+        var path: String = ""
+
         @OptionGroup()
-        var options: Revamp.Options
+        var commonFlags: Revamp.Options
 
         @Flag(name: .customLong("use-color"), help: "Apply color to output.")
         var colorize = false
 
         mutating func run() {
             let engine = Engine.initialize()
-            var flags: [String] = []
-            if options.verbose { flags.append("verbose")}
-            if colorize { flags.append("colorize") }
+            var flags: [String]          = []
+            var options: [String:String] = [:]
 
-            let input  = CommandInput(subCommand: "profile", arguments: [], options: [:], flags: flags)
+            if commonFlags.verbose { flags.append("verbose") }
+            if colorize { flags.append("colorize") }
+            if !path.isEmpty { options["path"] = path }
+
+            let input  = CommandInput(subCommand: "profile", arguments: [], options: options, flags: flags)
             let output = engine.execute("list", input: input)
 
             for output in output.basic {
@@ -75,7 +81,7 @@ extension Revamp.Show {
         static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
 
         @OptionGroup()
-        var options: Revamp.Options
+        var commonFlags: Revamp.Options
 
         @Argument var file: String
 
@@ -88,7 +94,7 @@ extension Revamp.Show {
         mutating func run() {
             let engine = Engine.initialize()
             var flags: [String] = []
-            if options.verbose { flags.append("verbose")}
+            if commonFlags.verbose { flags.append("verbose")}
 
             let input  = CommandInput(subCommand: "info", arguments: [file], options: [:], flags: flags)
             let output = engine.execute("show", input: input)

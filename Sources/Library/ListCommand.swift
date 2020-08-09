@@ -16,28 +16,29 @@ public class ListCommand2: Command2 {
 
         switch subCommand {
             case "profile":
-                return listDefaultProfiles()
+                return listProfiles()
             default:
                 return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
         }
     }
 
-    private func listDefaultProfiles() -> CommandOutput2 {
+    private func listProfiles() -> CommandOutput2 {
         var basicOutput: [String] = []
         var verbose = false
         var colorize  = false
         if input.flags.contains("verbose") { verbose = true }
         if input.flags.contains("colorize") { colorize = true }
 
-        let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-        let profileURL  = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)
-
+        var profileURL: URL
+        if let path = input.options["path"] {
+            profileURL      = URL(fileURLWithPath: path)
+        } else {
+            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
+            profileURL      = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)            
+        }
+        
         do {
-            let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(at: profileURL, 
-                                                           includingPropertiesForKeys: [],
-                                                           options: [ .skipsSubdirectoryDescendants,
-                                                                      .skipsHiddenFiles ] )
+            let urls = try getProfileUrls(at: profileURL)
 
             for url in urls {
                 if let data = try? Data(contentsOf: url) {
@@ -57,5 +58,21 @@ public class ListCommand2: Command2 {
         }
 
         return CommandOutput2(basic: basicOutput)
+    }
+
+    private func getProfileUrls(at: URL) throws -> [URL] {
+        let fileManager = FileManager.default
+        let urls = try fileManager.contentsOfDirectory(at: at, 
+                                                        includingPropertiesForKeys: [],
+                                                        options: [ .skipsSubdirectoryDescendants,
+                                                                    .skipsHiddenFiles ] )
+        var profileURLs: [URL] = []
+        for url in urls {
+            if url.pathExtension == "mobileprovision" {
+                profileURLs.append(url)
+            }
+        }
+
+        return profileURLs
     }
 }
