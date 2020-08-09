@@ -16,6 +16,7 @@ public struct ProfileAnalyzer {
     public static func getAllInfo(from file: File) throws -> [OutputGroup] {
         return try getInfo(from: file)
     }
+    
     private static func getInfo(from file: File) throws -> [OutputGroup] {
         var groups: [OutputGroup] = []
 

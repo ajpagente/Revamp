@@ -8,8 +8,16 @@ import Foundation
 import Files
 
 public struct AppAnalyzer {
-    @discardableResult
-    public static func getInfo(from file: File) throws -> [OutputGroup] {
+    public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
+        let groups = try getInfo(from: file)
+        return Array(groups.prefix(4))
+    }
+
+    public static func getAllInfo(from file: File) throws -> [OutputGroup] {
+        return try getInfo(from: file)
+    }
+
+    private static func getInfo(from file: File) throws -> [OutputGroup] {
         let workspace = try Workspace()
         try workspace.writeFile(file, to: .input, decompress: true)
 
@@ -29,17 +37,21 @@ public struct AppAnalyzer {
         
         let signInfo = try getSignInfo(from: appFolders.first!.path)
         let signGroup = OutputGroup(lines: signInfo, header: "App Signature", 
-                                    separator: ":", overrideMaxCount: appGroup.maxCount)
+                                    separator: ":")
 
         let profileInfo = try getProfileInfo(from: appFolders.first!.path)
         let profileGroup = OutputGroup(lines: profileInfo, header: "Profile Info", 
-                                    separator: ":", overrideMaxCount: appGroup.maxCount)
+                                    separator: ":")
         
         let entitlementsInfo = try getEntitlements(from: appFolders.first!.path)
         let entitlementsGroup = OutputGroup(lines: entitlementsInfo, header: "Entitlements", 
-                                    separator: ":", overrideMaxCount: appGroup.maxCount)
+                                    separator: ":")
 
-        let outputGroups = OutputGroups([appGroup, signGroup, profileGroup, entitlementsGroup])
+        let provisionedDevices = try getProvisionedDevices(from: appFolders.first!.path)
+        let devicesGroup = OutputGroup(lines: provisionedDevices, header: "Provisioned Devices", 
+                                    separator: ":")
+
+        let outputGroups = OutputGroups([appGroup, signGroup, profileGroup, entitlementsGroup, devicesGroup])
         return outputGroups.groups
     }
 
@@ -102,5 +114,24 @@ public struct AppAnalyzer {
         info.append("Push Enabled: \(entitlements.pushEnabled)")
         return info
     }
+
+    private static func getProvisionedDevices(from appPath: String) throws -> [String] {
+        let profileFile = try! Folder(path: appPath).file(named: "embedded.mobileprovision")
+        let profileURL  = URL(fileURLWithPath: profileFile.path)
+
+        let data = try Data(contentsOf: profileURL)
+        let profile = try ProvisioningProfile.parse(from: data)
+
+        var provisionedDevices: [String] = []
+        if let devices = profile!.provisionedDevices {
+            let count = devices.count
+            for (n, device) in devices.enumerated() {
+                provisionedDevices.append("Device \(n+1) of \(count): \(device)")
+            }
+        }
+
+        return provisionedDevices
+    }
+
 
 }

@@ -39,10 +39,18 @@ public class ShowCommand: Command2 {
 
     private func getIpaInfo() -> CommandOutput2 {
         var basicOutput: [String] = []
+        var groups: [OutputGroup] = []
+        var verbose = false
+        if input.flags.contains("verbose") { verbose = true }
 
         do {
             let appFile = try File(path: input.arguments.first!)
-            let groups  = try AppAnalyzer.getInfo(from: appFile)
+            // let groups  = try AppAnalyzer.getInfo(from: appFile)
+            if verbose { 
+                groups  = try AppAnalyzer.getAllInfo(from: appFile) 
+            } else {
+                groups  = try AppAnalyzer.getLimitedInfo(from: appFile)
+            }
 
             var combiInfo:[String] = []
             let formatter = OutputFormatter()
