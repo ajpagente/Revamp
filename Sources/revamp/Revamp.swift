@@ -80,6 +80,12 @@ extension Revamp.Show {
     struct Info: ParsableCommand {
         static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
 
+        @Option(name: [.customLong("translate-device"), .customShort("t")], 
+                help: ArgumentHelp(
+                    "The device UDID translation file.",
+                    valueName: "path"))
+        var deviceTranslationFilePath: String = ""
+
         @OptionGroup()
         var commonFlags: Revamp.Options
 
@@ -94,9 +100,12 @@ extension Revamp.Show {
         mutating func run() {
             let engine = Engine.initialize()
             var flags: [String] = []
-            if commonFlags.verbose { flags.append("verbose")}
+            var options: [String:String] = [:]
 
-            let input  = CommandInput(subCommand: "info", arguments: [file], options: [:], flags: flags)
+            if commonFlags.verbose { flags.append("verbose")}
+            if !deviceTranslationFilePath.isEmpty { options["translation-path"] = deviceTranslationFilePath }
+
+            let input  = CommandInput(subCommand: "info", arguments: [file], options: options, flags: flags)
             let output = engine.execute("show", input: input)
 
             for output in output.basic {
