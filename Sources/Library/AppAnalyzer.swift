@@ -8,16 +8,16 @@ import Foundation
 import Files
 
 public struct AppAnalyzer {
-    public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
-        let groups = try getInfo(from: file, translationFile: nil)
+    public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
+        let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
         return Array(groups.prefix(4))
     }
 
-    public static func getAllInfo(from file: File, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
-        return try getInfo(from: file, translationFile: translationFile)
+    public static func getAllInfo(from file: File, colorize: Bool = false, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
+        return try getInfo(from: file, colorize: colorize, translationFile: translationFile)
     }
 
-    private static func getInfo(from file: File, translationFile: File?) throws -> [OutputGroup] {
+    private static func getInfo(from file: File, colorize: Bool, translationFile: File?) throws -> [OutputGroup] {
         let workspace = try Workspace()
         try workspace.writeFile(file, to: .input, decompress: true)
 
@@ -39,7 +39,7 @@ public struct AppAnalyzer {
         let signGroup = OutputGroup(lines: signInfo, header: "App Signature", 
                                     separator: ":")
 
-        let profileInfo = try getProfileInfo(from: appFolders.first!.path)
+        let profileInfo = try getProfileInfo(from: appFolders.first!.path, colorize: colorize)
         let profileGroup = OutputGroup(lines: profileInfo, header: "Profile Info", 
                                     separator: ":")
         
@@ -75,7 +75,7 @@ public struct AppAnalyzer {
         return info
     }
 
-    private static func getProfileInfo(from appPath: String) throws -> [String] {
+    private static func getProfileInfo(from appPath: String, colorize: Bool) throws -> [String] {
         let profileFile = try! Folder(path: appPath).file(named: "embedded.mobileprovision")
         let profileURL  = URL(fileURLWithPath: profileFile.path)
 
@@ -96,7 +96,7 @@ public struct AppAnalyzer {
             info.append("Certificate #: \(n+1)")
             info.append("Common Name: \(certificate.certificate!.commonName!)")
             info.append("Team Identifier: \(certificate.certificate!.orgUnit)")      
-            info.append("Expiry: \(dateFormatter.string(from: certificate.certificate!.notValidAfter))")
+            info.append("Expiry: \(formatDate(certificate.certificate!.notValidAfter, colorizeIfExpired: colorize))")
         }
         return info
     }
@@ -138,5 +138,13 @@ public struct AppAnalyzer {
         return printDevices
     }
 
-
+    private static func formatDate(_ date: Date, colorizeIfExpired: Bool) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd,yyyy"
+        let dateString = dateFormatter.string(from: date)
+    
+        let now = Date()
+        if colorizeIfExpired && date <= now { return "\(dateString, color: .red)" }
+        else { return dateString }
+    }
 }

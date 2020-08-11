@@ -8,16 +8,16 @@ import Foundation
 import Files
 
 public struct ProfileAnalyzer {
-    public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
-        let groups = try getInfo(from: file, translationFile: nil)
+    public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
+        let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
         return Array(groups.prefix(3))
     }
 
-    public static func getAllInfo(from file: File, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
-        return try getInfo(from: file, translationFile: translationFile)
+    public static func getAllInfo(from file: File, colorize: Bool = false, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
+        return try getInfo(from: file, colorize: colorize, translationFile: translationFile)
     }
     
-    private static func getInfo(from file: File, translationFile: File?) throws -> [OutputGroup] {
+    private static func getInfo(from file: File, colorize: Bool, translationFile: File?) throws -> [OutputGroup] {
         var groups: [OutputGroup] = []
 
         let profileURL  = URL(fileURLWithPath: file.path)
@@ -25,14 +25,12 @@ public struct ProfileAnalyzer {
         let profile = try ProvisioningProfile.parse(from: data)
 
         var info: [String] = []
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM dd,yyyy"
 
         info.append("Profile Name: \(profile!.name)")
         info.append("Profile UUID: \(profile!.UUID)")
         info.append("App ID Name: \(profile!.appIDName)")
         info.append("Team Name: \(profile!.teamName)")
-        info.append("Profile Expiry: \(dateFormatter.string(from: profile!.expirationDate))")
+        info.append("Profile Expiry: \(formatDate(profile!.expirationDate, colorizeIfExpired: colorize))")
         groups.append(OutputGroup(lines: info, header: "Info", separator: ":"))
 
         var entitlementsInfo: [String] = []
@@ -46,7 +44,7 @@ public struct ProfileAnalyzer {
             certificateInfo.append("Certificate #: \(n+1)")
             certificateInfo.append("Common Name: \(certificate.certificate!.commonName!)")
             certificateInfo.append("Team Identifier: \(certificate.certificate!.orgUnit)")      
-            certificateInfo.append("Expiry: \(dateFormatter.string(from: certificate.certificate!.notValidAfter))")
+            certificateInfo.append("Expiry: \(formatDate(certificate.certificate!.notValidAfter, colorizeIfExpired: colorize))")
         }
         groups.append(OutputGroup(lines: certificateInfo, header: "Certificate", separator: ":"))
 
@@ -67,4 +65,15 @@ public struct ProfileAnalyzer {
         let outputGroups = OutputGroups(groups)
         return outputGroups.groups
     }
+
+    private static func formatDate(_ date: Date, colorizeIfExpired: Bool) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd,yyyy"
+        let dateString = dateFormatter.string(from: date)
+    
+        let now = Date()
+        if colorizeIfExpired && date <= now { return "\(dateString, color: .red)" }
+        else { return dateString }
+    }
+
 }

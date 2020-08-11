@@ -41,7 +41,9 @@ public class ShowCommand: Command2 {
         var basicOutput: [String] = []
         var groups: [OutputGroup] = []
         var verbose = false
+        var colorize = false
         if input.flags.contains("verbose") { verbose = true }
+        if input.flags.contains("colorize") { colorize = true }
         var translationFile: File? 
         if let translationPath = input.options["translation-path"] {
             do { 
@@ -55,9 +57,9 @@ public class ShowCommand: Command2 {
             let appFile = try File(path: input.arguments.first!)
             // let groups  = try AppAnalyzer.getInfo(from: appFile)
             if verbose { 
-                groups  = try AppAnalyzer.getAllInfo(from: appFile, translateWith: translationFile) 
+                groups  = try AppAnalyzer.getAllInfo(from: appFile, colorize: colorize, translateWith: translationFile) 
             } else {
-                groups  = try AppAnalyzer.getLimitedInfo(from: appFile)
+                groups  = try AppAnalyzer.getLimitedInfo(from: appFile, colorize: colorize)
             }
 
             var combiInfo:[String] = []
@@ -76,8 +78,10 @@ public class ShowCommand: Command2 {
     private func getProfileInfo() -> CommandOutput2 {
         var basicOutput: [String] = []
         var groups: [OutputGroup] = []
-        var verbose = false
-        if input.flags.contains("verbose") { verbose = true }
+        var verbose  = false
+        var colorize = false
+        if input.flags.contains("verbose")  { verbose = true }
+        if input.flags.contains("colorize") { colorize = true }
         var translationFile: File? 
         if let translationPath = input.options["translation-path"] {
             do { 
@@ -90,9 +94,9 @@ public class ShowCommand: Command2 {
         do {
             let profileFile = try File(path: input.arguments.first!)
             if verbose { 
-                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile, translateWith: translationFile) 
+                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile, colorize: colorize, translateWith: translationFile) 
             } else {
-                groups  = try ProfileAnalyzer.getLimitedInfo(from: profileFile)
+                groups  = try ProfileAnalyzer.getLimitedInfo(from: profileFile, colorize: colorize)
             }
 
             var combiInfo:[String] = []

@@ -20,6 +20,9 @@ struct Revamp: ParsableCommand {
     struct Options: ParsableArguments {
         @Flag(name: .shortAndLong, help: "Increase verbosity for informational output.")
         var verbose = false
+
+        @Flag(name: .customLong("use-color"), help: "Apply color to output.")
+        var colorize = false
     }
 
 }
@@ -54,16 +57,13 @@ extension Revamp.List {
         @OptionGroup()
         var commonFlags: Revamp.Options
 
-        @Flag(name: .customLong("use-color"), help: "Apply color to output.")
-        var colorize = false
-
         mutating func run() {
             let engine = Engine.initialize()
             var flags: [String]          = []
             var options: [String:String] = [:]
 
-            if commonFlags.verbose { flags.append("verbose") }
-            if colorize { flags.append("colorize") }
+            if commonFlags.verbose  { flags.append("verbose") }
+            if commonFlags.colorize { flags.append("colorize") }
             if !path.isEmpty { options["path"] = path }
 
             let input  = CommandInput(subCommand: "profile", arguments: [], options: options, flags: flags)
@@ -102,7 +102,8 @@ extension Revamp.Show {
             var flags: [String] = []
             var options: [String:String] = [:]
 
-            if commonFlags.verbose { flags.append("verbose")}
+            if commonFlags.verbose  { flags.append("verbose")}
+            if commonFlags.colorize { flags.append("colorize") }
             if !deviceTranslationFilePath.isEmpty { options["translation-path"] = deviceTranslationFilePath }
 
             let input  = CommandInput(subCommand: "info", arguments: [file], options: options, flags: flags)
