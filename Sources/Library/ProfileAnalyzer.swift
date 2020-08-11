@@ -9,15 +9,15 @@ import Files
 
 public struct ProfileAnalyzer {
     public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
-        let groups = try getInfo(from: file)
+        let groups = try getInfo(from: file, translationFile: nil)
         return Array(groups.prefix(3))
     }
 
-    public static func getAllInfo(from file: File) throws -> [OutputGroup] {
-        return try getInfo(from: file)
+    public static func getAllInfo(from file: File, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
+        return try getInfo(from: file, translationFile: translationFile)
     }
     
-    private static func getInfo(from file: File) throws -> [OutputGroup] {
+    private static func getInfo(from file: File, translationFile: File?) throws -> [OutputGroup] {
         var groups: [OutputGroup] = []
 
         let profileURL  = URL(fileURLWithPath: file.path)
@@ -51,13 +51,18 @@ public struct ProfileAnalyzer {
         groups.append(OutputGroup(lines: certificateInfo, header: "Certificate", separator: ":"))
 
         var provisionedDevices: [String] = []
-        if let devices = profile!.provisionedDevices {
-            let count = devices.count
-            for (n, device) in devices.enumerated() {
-                provisionedDevices.append("Device \(n+1) of \(count): \(device)")
-            }
-            groups.append(OutputGroup(lines: provisionedDevices, header: "Provisioned Devices", separator: ":"))
+        var printDevices: [String] = []
+        if let file = translationFile {
+            provisionedDevices = try profile!.getTranslatedDevices(using: file)
+        } else {
+            if let devices = profile!.provisionedDevices { provisionedDevices = devices }
         }
+
+        let count = provisionedDevices.count
+        for (n, device) in provisionedDevices.enumerated() {
+            printDevices.append("Device \(n+1) of \(count): \(device)")
+        }
+        groups.append(OutputGroup(lines: printDevices, header: "Provisioned Devices", separator: ":"))
 
         let outputGroups = OutputGroups(groups)
         return outputGroups.groups

@@ -42,12 +42,20 @@ public class ShowCommand: Command2 {
         var groups: [OutputGroup] = []
         var verbose = false
         if input.flags.contains("verbose") { verbose = true }
+        var translationFile: File? 
+        if let translationPath = input.options["translation-path"] {
+            do { 
+                translationFile = try File(path: translationPath)
+            } catch {
+                translationFile = nil
+            }
+        }
 
         do {
             let appFile = try File(path: input.arguments.first!)
             // let groups  = try AppAnalyzer.getInfo(from: appFile)
             if verbose { 
-                groups  = try AppAnalyzer.getAllInfo(from: appFile) 
+                groups  = try AppAnalyzer.getAllInfo(from: appFile, translateWith: translationFile) 
             } else {
                 groups  = try AppAnalyzer.getLimitedInfo(from: appFile)
             }
@@ -70,11 +78,19 @@ public class ShowCommand: Command2 {
         var groups: [OutputGroup] = []
         var verbose = false
         if input.flags.contains("verbose") { verbose = true }
+        var translationFile: File? 
+        if let translationPath = input.options["translation-path"] {
+            do { 
+                translationFile = try File(path: translationPath)
+            } catch {
+                translationFile = nil
+            }
+        }
 
         do {
             let profileFile = try File(path: input.arguments.first!)
             if verbose { 
-                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile) 
+                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile, translateWith: translationFile) 
             } else {
                 groups  = try ProfileAnalyzer.getLimitedInfo(from: profileFile)
             }
@@ -86,6 +102,7 @@ public class ShowCommand: Command2 {
             }
             basicOutput = combiInfo
         } catch {
+            print("\(error)")
             return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
         }
 

@@ -9,15 +9,15 @@ import Files
 
 public struct AppAnalyzer {
     public static func getLimitedInfo(from file: File) throws -> [OutputGroup] {
-        let groups = try getInfo(from: file)
+        let groups = try getInfo(from: file, translationFile: nil)
         return Array(groups.prefix(4))
     }
 
-    public static func getAllInfo(from file: File) throws -> [OutputGroup] {
-        return try getInfo(from: file)
+    public static func getAllInfo(from file: File, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
+        return try getInfo(from: file, translationFile: translationFile)
     }
 
-    private static func getInfo(from file: File) throws -> [OutputGroup] {
+    private static func getInfo(from file: File, translationFile: File?) throws -> [OutputGroup] {
         let workspace = try Workspace()
         try workspace.writeFile(file, to: .input, decompress: true)
 
@@ -47,7 +47,7 @@ public struct AppAnalyzer {
         let entitlementsGroup = OutputGroup(lines: entitlementsInfo, header: "Entitlements", 
                                     separator: ":")
 
-        let provisionedDevices = try getProvisionedDevices(from: appFolders.first!.path)
+        let provisionedDevices = try getProvisionedDevices(from: appFolders.first!.path, translationFile: translationFile)
         let devicesGroup = OutputGroup(lines: provisionedDevices, header: "Provisioned Devices", 
                                     separator: ":")
 
@@ -115,7 +115,7 @@ public struct AppAnalyzer {
         return info
     }
 
-    private static func getProvisionedDevices(from appPath: String) throws -> [String] {
+    private static func getProvisionedDevices(from appPath: String, translationFile: File?) throws -> [String] {
         let profileFile = try! Folder(path: appPath).file(named: "embedded.mobileprovision")
         let profileURL  = URL(fileURLWithPath: profileFile.path)
 
@@ -123,14 +123,19 @@ public struct AppAnalyzer {
         let profile = try ProvisioningProfile.parse(from: data)
 
         var provisionedDevices: [String] = []
-        if let devices = profile!.provisionedDevices {
-            let count = devices.count
-            for (n, device) in devices.enumerated() {
-                provisionedDevices.append("Device \(n+1) of \(count): \(device)")
-            }
+        var printDevices: [String] = []
+        if let file = translationFile {
+            provisionedDevices = try profile!.getTranslatedDevices(using: file)
+        } else {
+            if let devices = profile!.provisionedDevices { provisionedDevices = devices }
         }
 
-        return provisionedDevices
+        let count = provisionedDevices.count
+        for (n, device) in provisionedDevices.enumerated() {
+            printDevices.append("Device \(n+1) of \(count): \(device)")
+        }
+
+        return printDevices
     }
 
 

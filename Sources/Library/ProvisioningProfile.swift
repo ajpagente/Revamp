@@ -64,6 +64,16 @@ public extension ProvisioningProfile {
 
 }
 
+public extension ProvisioningProfile {
+    func getTranslatedDevices(using file: File) throws -> [String] {
+        let translator = try DeviceTranslator(file: file)
+        if let devices = provisionedDevices {
+            return try translator.translate(devices)
+        }
+        return []
+    }
+}
+
 struct ProvisioningProfiles {
     var profiles: [ProvisioningProfile] = []
 }
