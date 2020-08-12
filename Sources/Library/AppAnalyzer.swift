@@ -10,7 +10,7 @@ import Files
 public struct AppAnalyzer {
     public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
         let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
-        return Array(groups.prefix(4))
+        return Array(groups.prefix(3))
     }
 
     public static func getAllInfo(from file: File, colorize: Bool = false, translateWith translationFile: File? = nil) throws -> [OutputGroup] {
@@ -33,11 +33,7 @@ public struct AppAnalyzer {
         info.append("Min OS Version: \(infoPlist.minOSVersion)")
         info.append("Platform Version: \(infoPlist.platformVersion)")
 
-        let appGroup = OutputGroup(lines: info, header: "App Info", separator: ":")
-        
-        let signInfo = try getSignInfo(from: appFolders.first!.path)
-        let signGroup = OutputGroup(lines: signInfo, header: "App Signature", 
-                                    separator: ":")
+        let appGroup = OutputGroup(lines: info, header: "App Info", separator: ":")    
 
         let profileInfo = try getProfileInfo(from: appFolders.first!.path, colorize: colorize)
         let profileGroup = OutputGroup(lines: profileInfo, header: "Profile Info", 
@@ -51,28 +47,8 @@ public struct AppAnalyzer {
         let devicesGroup = OutputGroup(lines: provisionedDevices, header: "Provisioned Devices", 
                                     separator: ":")
 
-        let outputGroups = OutputGroups([appGroup, signGroup, profileGroup, entitlementsGroup, devicesGroup])
+        let outputGroups = OutputGroups([appGroup, profileGroup, entitlementsGroup, devicesGroup])
         return outputGroups.groups
-    }
-
-    private static func getSignInfo(from appPath: String) throws -> [String] {
-        let processOutput = Process().execute("/usr/bin/codesign", arguments: ["--display","--verbose=4","-d", appPath])
-        let signInfo = processOutput.output.components(separatedBy: "\n")
-
-        // get the signing identity and team id
-        var info: [String] = []
-        if let index = signInfo.firstIndex(where: { $0.contains("Authority=") }) {
-            let fullString = signInfo[index]
-            let split = fullString.components(separatedBy: "=")
-            info.append("Authority: \(split.last!)")
-        }
-
-        if let index = signInfo.firstIndex(where: { $0.contains("TeamIdentifier=") }) {
-            let fullString = signInfo[index]
-            let split = fullString.components(separatedBy: "=")
-            info.append("Team Identifier: \(split.last!)")
-        }
-        return info
     }
 
     private static func getProfileInfo(from appPath: String, colorize: Bool) throws -> [String] {
