@@ -9,6 +9,25 @@ import Files
 
 
 public class ShowCommand: Command2 {
+    private var basicOutput: [String] = []
+    private var groups: [OutputGroup] = []
+    private var verbose: Bool {
+        return input.flags.contains("verbose")
+    }
+    private var colorize: Bool {
+        return input.flags.contains("colorize")
+    }
+    private var translationFile: File? {
+        if let translationPath = input.options["translation-path"] {
+            do { 
+                return try File(path: translationPath)
+            } catch {
+                return nil
+            }
+        } 
+        return nil
+    }
+
     public override class var assignedName: String {
         return "show"
     }
@@ -25,91 +44,59 @@ public class ShowCommand: Command2 {
     }
 
     private func dispatch() -> CommandOutput2 {
-        let file = try! File(path: input.arguments.first!)    
-
-        switch file.extension {
+        do {
+            let file = try File(path: input.arguments.first!)
+            switch file.extension {
             case "ipa":
-                return getIpaInfo()
+                return getIpaInfo(file)
             case "mobileprovision":
-                return getProfileInfo()
+                return getProfileInfo(file)
             default:
                 return CommandOutput2(errorCode: .invalidArgument, basic: ["File type not supported."])
+            }
+        } catch {
+            return CommandOutput2(errorCode: .invalidArgument, basic: ["File not found or the file is corrupt."])
         }
     }
 
-    private func getIpaInfo() -> CommandOutput2 {
-        var basicOutput: [String] = []
-        var groups: [OutputGroup] = []
-        var verbose = false
-        var colorize = false
-        if input.flags.contains("verbose") { verbose = true }
-        if input.flags.contains("colorize") { colorize = true }
-        var translationFile: File? 
-        if let translationPath = input.options["translation-path"] {
-            do { 
-                translationFile = try File(path: translationPath)
-            } catch {
-                translationFile = nil
-            }
-        }
-
+    private func getIpaInfo(_ file: File) -> CommandOutput2 {
         do {
-            let appFile = try File(path: input.arguments.first!)
-            // let groups  = try AppAnalyzer.getInfo(from: appFile)
             if verbose { 
-                groups  = try AppAnalyzer.getAllInfo(from: appFile, colorize: colorize, translateWith: translationFile) 
+                groups  = try AppAnalyzer.getAllInfo(from: file, colorize: colorize, translateWith: translationFile) 
             } else {
-                groups  = try AppAnalyzer.getLimitedInfo(from: appFile, colorize: colorize)
+                groups  = try AppAnalyzer.getLimitedInfo(from: file, colorize: colorize)
             }
-
-            var combiInfo:[String] = []
-            let formatter = OutputFormatter()
-            for group in groups {
-                combiInfo.append(contentsOf: formatter.strings(from: group))
-            }
-            basicOutput = combiInfo
+            basicOutput = formatOutput(groups)
         } catch {
+            print("\(error)")
             return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing ipa."])
         }
 
         return CommandOutput2(basic: basicOutput)
     }
 
-    private func getProfileInfo() -> CommandOutput2 {
-        var basicOutput: [String] = []
-        var groups: [OutputGroup] = []
-        var verbose  = false
-        var colorize = false
-        if input.flags.contains("verbose")  { verbose = true }
-        if input.flags.contains("colorize") { colorize = true }
-        var translationFile: File? 
-        if let translationPath = input.options["translation-path"] {
-            do { 
-                translationFile = try File(path: translationPath)
-            } catch {
-                translationFile = nil
-            }
-        }
-
+    private func getProfileInfo(_ file: File) -> CommandOutput2 {
         do {
-            let profileFile = try File(path: input.arguments.first!)
             if verbose { 
-                groups  = try ProfileAnalyzer.getAllInfo(from: profileFile, colorize: colorize, translateWith: translationFile) 
+                groups  = try ProfileAnalyzer.getAllInfo(from: file, colorize: colorize, translateWith: translationFile) 
             } else {
-                groups  = try ProfileAnalyzer.getLimitedInfo(from: profileFile, colorize: colorize)
+                groups  = try ProfileAnalyzer.getLimitedInfo(from: file, colorize: colorize)
             }
-
-            var combiInfo:[String] = []
-            let formatter = OutputFormatter()
-            for group in groups {
-                combiInfo.append(contentsOf: formatter.strings(from: group))
-            }
-            basicOutput = combiInfo
+            basicOutput = formatOutput(groups)
         } catch {
             print("\(error)")
             return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
         }
 
         return CommandOutput2(basic: basicOutput)
+    }
+
+    private func formatOutput(_ groups: [OutputGroup]) -> [String] {
+        var formatted:[String] = []
+        let formatter = OutputFormatter()
+        for group in groups {
+            formatted.append(contentsOf: formatter.strings(from: group))
+        }
+        return formatted
     }
 }
