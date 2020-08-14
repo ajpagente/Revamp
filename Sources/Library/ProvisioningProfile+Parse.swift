@@ -30,6 +30,7 @@ public extension ProvisioningProfile {
             profile = try PropertyListDecoder().decode(ProvisioningProfile.self, from: data)
         } catch {
             debugPrint(error)
+            print(error)
             // TODO: log this error
         }
 

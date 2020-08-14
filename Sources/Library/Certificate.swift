@@ -17,21 +17,24 @@ public struct Certificate: Encodable, Equatable {
     }
     
     public let notValidBefore: Date
-    public let notValidAfter: Date
+    public let notValidAfter:  Date
     
-    public let issuerCommonName: String
+    public let issuerCommonName:  String
     public let issuerCountryName: String
-    public let issuerOrgName: String
-    public let issuerOrgUnit: String
+    public let issuerOrgName:     String
+    public let issuerOrgUnit:     String
+
+    public let serialNumber:      String
+    public let fingerprints:      [String:String]
     
-    public let commonName: String?
+    public let commonName:  String?
     public let countryName: String
-    public let orgName: String?
-    public let orgUnit: String
+    public let orgName:     String?
+    public let orgUnit:     String
     
     init(results: [CFString: Any], commonName: String?) throws {
         self.commonName = commonName
-        
+
         notValidBefore = try Certificate.getValue(for: kSecOIDX509V1ValidityNotBefore, from: results)
         notValidAfter = try Certificate.getValue(for: kSecOIDX509V1ValidityNotAfter, from: results)
         
@@ -40,7 +43,19 @@ public struct Certificate: Encodable, Equatable {
         issuerCountryName = try Certificate.getValue(for: kSecOIDCountryName, fromDict: issuerName)
         issuerOrgName = try Certificate.getValue(for: kSecOIDOrganizationName, fromDict: issuerName)
         issuerOrgUnit = try Certificate.getValue(for: kSecOIDOrganizationalUnitName, fromDict: issuerName)
+
+        serialNumber = try Certificate.getValue(for: kSecOIDX509V1SerialNumber, from: results)
+
+        let shaFingerprints: [[CFString: Any]] = try Certificate.getValue(for: "Fingerprints" as CFString, from: results)
+        let sha1Fingerprint: Data   = try Certificate.getValue(for: "SHA-1" as CFString, fromDict: shaFingerprints)
+        let sha256Fingerprint: Data = try Certificate.getValue(for: "SHA-256" as CFString, fromDict: shaFingerprints)
         
+        let sha1   = sha1Fingerprint.map { String(format: "%02x", $0) }.joined()
+        let sha256 = sha256Fingerprint.map { String(format: "%02x", $0) }.joined()
+
+        self.fingerprints = ["SHA-1":   sha1.uppercased(), 
+                             "SHA-256": sha256.uppercased()]
+
         let subjectName: [[CFString: Any]] = try Certificate.getValue(for: kSecOIDX509V1SubjectName, from: results)
         countryName = try Certificate.getValue(for: kSecOIDCountryName, fromDict: subjectName)
         orgName = try? Certificate.getValue(for: kSecOIDOrganizationName, fromDict: subjectName)

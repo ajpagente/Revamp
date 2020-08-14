@@ -19,51 +19,65 @@ public struct ProfileAnalyzer {
     
     private static func getInfo(from file: File, colorize: Bool, translationFile: File?) throws -> [OutputGroup] {
         var groups: [OutputGroup] = []
-
         let profileURL  = URL(fileURLWithPath: file.path)
-        let data = try Data(contentsOf: profileURL)
-        let profile = try ProvisioningProfile.parse(from: data)
+        let data        = try Data(contentsOf: profileURL)
+        let profile     = try ProvisioningProfile.parse(from: data)
+ 
+        groups.append(try getProfileInfo(from: profile!, colorize: colorize))
+        groups.append(try getEntitlements(from: profile!, colorize: colorize))
+        groups.append(try getCertificates(from: profile!, colorize: colorize))
+        groups.append(try getProvisionedDevices(from: profile!, colorize: colorize, translationFile: translationFile))
 
+        let outputGroups = OutputGroups(groups)
+        return outputGroups.groups
+    }
+
+    private static func getProfileInfo(from profile: ProvisioningProfile, colorize: Bool = false) throws -> OutputGroup {
         var info: [String] = []
+        info.append("Profile Name: \(profile.name)")
+        info.append("Profile UUID: \(profile.UUID)")
+        info.append("App ID Name: \(profile.appIDName)")
+        info.append("Team Name: \(profile.teamName)")
+        info.append("Profile Expiry: \(formatDate(profile.expirationDate, colorizeIfExpired: colorize))")
+        return OutputGroup(lines: info, header: "Profile Info", separator: ":")
+    }
 
-        info.append("Profile Name: \(profile!.name)")
-        info.append("Profile UUID: \(profile!.UUID)")
-        info.append("App ID Name: \(profile!.appIDName)")
-        info.append("Team Name: \(profile!.teamName)")
-        info.append("Profile Expiry: \(formatDate(profile!.expirationDate, colorizeIfExpired: colorize))")
-        groups.append(OutputGroup(lines: info, header: "Info", separator: ":"))
+    private static func getEntitlements(from profile: ProvisioningProfile, colorize: Bool = false) throws -> OutputGroup {
+        let entitlements = Entitlements(profile.entitlements)
+        var info: [String] = []
+        info.append("Debuggable: \(entitlements.debuggable)")
+        info.append("Push Enabled: \(entitlements.pushEnabled)")
+        return OutputGroup(lines: info, header: "Entitlements", separator: ":")
+    }
 
-        var entitlementsInfo: [String] = []
-        let entitlements = Entitlements(profile!.entitlements)
-        entitlementsInfo.append("Debuggable: \(entitlements.debuggable)")
-        entitlementsInfo.append("Push enabled: \(entitlements.pushEnabled)")
-        groups.append(OutputGroup(lines: entitlementsInfo, header: "Entitlements", separator: ":"))
-
+    private static func getCertificates(from profile: ProvisioningProfile, colorize: Bool = false) throws -> OutputGroup {
         var certificateInfo: [String] = []
-        for (n, certificate) in profile!.developerCertificates.enumerated() {
+        for (n, certificate) in profile.developerCertificates.enumerated() {
             certificateInfo.append("Certificate #: \(n+1)")
             certificateInfo.append("Common Name: \(certificate.certificate!.commonName!)")
             certificateInfo.append("Team Identifier: \(certificate.certificate!.orgUnit)")      
+            certificateInfo.append("Serial Number: \(certificate.certificate!.serialNumber)")
+            certificateInfo.append("SHA-1: \(certificate.certificate!.fingerprints["SHA-1"]!)")
             certificateInfo.append("Expiry: \(formatDate(certificate.certificate!.notValidAfter, colorizeIfExpired: colorize))")
         }
-        groups.append(OutputGroup(lines: certificateInfo, header: "Certificate", separator: ":"))
+        return OutputGroup(lines: certificateInfo, header: "Developer Certificates", separator: ":")
+    }
 
+    private static func getProvisionedDevices(from profile: ProvisioningProfile, colorize: Bool, translationFile: File?) throws -> OutputGroup {
         var provisionedDevices: [String] = []
         var printDevices: [String] = []
         if let file = translationFile {
-            provisionedDevices = try profile!.getTranslatedDevices(using: file)
+            provisionedDevices = try profile.getTranslatedDevices(using: file)
         } else {
-            if let devices = profile!.provisionedDevices { provisionedDevices = devices }
+            if let devices = profile.provisionedDevices { provisionedDevices = devices }
         }
 
         let count = provisionedDevices.count
         for (n, device) in provisionedDevices.enumerated() {
             printDevices.append("Device \(n+1) of \(count): \(device)")
         }
-        groups.append(OutputGroup(lines: printDevices, header: "Provisioned Devices", separator: ":"))
 
-        let outputGroups = OutputGroups(groups)
-        return outputGroups.groups
+        return OutputGroup(lines: printDevices, header: "Provisioned Devices", separator: ":")
     }
 
     private static func formatDate(_ date: Date, colorizeIfExpired: Bool) -> String {
@@ -75,5 +89,4 @@ public struct ProfileAnalyzer {
         if colorizeIfExpired && date <= now { return "\(dateString, color: .red)" }
         else { return dateString }
     }
-
 }
