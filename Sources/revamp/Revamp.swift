@@ -12,8 +12,7 @@ struct Revamp: ParsableCommand {
 
     static var configuration = CommandConfiguration(
         abstract: """
-        revamp v\(Version.value)
-        A program that provides signing environment query capabilities.
+        A program that provides signing artifact discovery and query capabilities.
         """,
         subcommands: [List.self, Show.self])
 
