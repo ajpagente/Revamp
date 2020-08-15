@@ -31,10 +31,10 @@ public enum CommandOutputType {
     case verbose
 }
 
-public struct CommandOutput {
-    public var simple: [String]
-    public var verbose: [String]
-}
+// public struct CommandOutput {
+//     public var simple: [String]
+//     public var verbose: [String]
+// }
 
 public enum CommandStatus {
     case success
