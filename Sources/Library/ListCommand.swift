@@ -11,18 +11,18 @@ public class ListCommand: Command2 {
         return "list"
     }
 
-    public override func execute() -> CommandOutput2 {
+    public override func execute() -> CommandOutput {
         let subCommand = input.subCommand
 
         switch subCommand {
             case "profile":
                 return listProfiles()
             default:
-                return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         }
     }
 
-    private func listProfiles() -> CommandOutput2 {
+    private func listProfiles() -> CommandOutput {
         var basicOutput: [String] = []
         var verbose = false
         var colorize  = false
@@ -54,10 +54,10 @@ public class ListCommand: Command2 {
                 }  
             }
         } catch {
-            return CommandOutput2(errorCode: .profileParsingError, basic: ["Error when parsing provisioning profiles."])
+            return CommandOutput(errorCode: .profileParsingError, basic: ["Error when parsing provisioning profiles."])
         }
 
-        return CommandOutput2(basic: basicOutput)
+        return CommandOutput(basic: basicOutput)
     }
 
     private func getProfileUrls(at: URL) throws -> [URL] {

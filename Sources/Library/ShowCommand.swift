@@ -32,18 +32,18 @@ public class ShowCommand: Command2 {
         return "show"
     }
 
-    public override func execute() -> CommandOutput2 {
+    public override func execute() -> CommandOutput {
         let subCommand = input.subCommand
 
         switch subCommand {
             case "info":
                 return dispatch()
             default:
-                return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         }
     }
 
-    private func dispatch() -> CommandOutput2 {
+    private func dispatch() -> CommandOutput {
         do {
             let file = try File(path: input.arguments.first!)
             switch file.extension {
@@ -52,14 +52,14 @@ public class ShowCommand: Command2 {
             case "mobileprovision":
                 return getProfileInfo(file)
             default:
-                return CommandOutput2(errorCode: .invalidArgument, basic: ["File type not supported."])
+                return CommandOutput(errorCode: .invalidArgument, basic: ["File type not supported."])
             }
         } catch {
-            return CommandOutput2(errorCode: .invalidArgument, basic: ["File not found or the file is corrupt."])
+            return CommandOutput(errorCode: .invalidArgument, basic: ["File not found or the file is corrupt."])
         }
     }
 
-    private func getIpaInfo(_ file: File) -> CommandOutput2 {
+    private func getIpaInfo(_ file: File) -> CommandOutput {
         do {
             if verbose { 
                 groups  = try AppAnalyzer.getAllInfo(from: file, colorize: colorize, translateWith: translationFile) 
@@ -69,13 +69,13 @@ public class ShowCommand: Command2 {
             basicOutput = formatOutput(groups)
         } catch {
             print("\(error)")
-            return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing ipa."])
+            return CommandOutput(errorCode: .ipaParsingError, basic: ["Error when parsing ipa."])
         }
 
-        return CommandOutput2(basic: basicOutput)
+        return CommandOutput(basic: basicOutput)
     }
 
-    private func getProfileInfo(_ file: File) -> CommandOutput2 {
+    private func getProfileInfo(_ file: File) -> CommandOutput {
         do {
             if verbose { 
                 groups  = try ProfileAnalyzer.getAllInfo(from: file, colorize: colorize, translateWith: translationFile) 
@@ -85,10 +85,10 @@ public class ShowCommand: Command2 {
             basicOutput = formatOutput(groups)
         } catch {
             print("\(error)")
-            return CommandOutput2(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
+            return CommandOutput(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
         }
 
-        return CommandOutput2(basic: basicOutput)
+        return CommandOutput(basic: basicOutput)
     }
 
     private func formatOutput(_ groups: [OutputGroup]) -> [String] {

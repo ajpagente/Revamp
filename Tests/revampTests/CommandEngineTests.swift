@@ -19,7 +19,7 @@ final class CommandEngineTests: XCTestCase {
         let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("first", input: input)
 
-        let expected = CommandOutput2(basic: ["first executed"])
+        let expected = CommandOutput(basic: ["first executed"])
         XCTAssertEqual(actual.basic, expected.basic)
     }
 
@@ -28,7 +28,7 @@ final class CommandEngineTests: XCTestCase {
         let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("abcd", input: input)
 
-        let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         XCTAssertEqual(actual.basic, expected.basic)
     }
 
@@ -38,11 +38,11 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput2(basic: ["first executed"])
+        var expected = CommandOutput(basic: ["first executed"])
         XCTAssertEqual(actual.basic, expected.basic)
 
         actual   = engine.execute("second", input: input)
-        expected = CommandOutput2(basic: ["second executed"])
+        expected = CommandOutput(basic: ["second executed"])
         XCTAssertEqual(actual.basic, expected.basic)
     }
 
@@ -52,7 +52,7 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         XCTAssertEqual(actual.basic, expected.basic)
     }
 
@@ -63,15 +63,15 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput2(basic: ["first executed"])
+        var expected = CommandOutput(basic: ["first executed"])
         XCTAssertEqual(actual.basic, expected.basic)
 
         actual   = engine.execute("second", input: input)
-        expected = CommandOutput2(basic: ["second executed"])
+        expected = CommandOutput(basic: ["second executed"])
         XCTAssertEqual(actual.basic, expected.basic)
 
         actual   = engine.execute("third", input: input)
-        expected = CommandOutput2(basic: ["third executed"])
+        expected = CommandOutput(basic: ["third executed"])
         XCTAssertEqual(actual.basic, expected.basic)
     }
 
@@ -82,7 +82,7 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         XCTAssertEqual(actual.basic, expected.basic)
     }   
 
@@ -102,8 +102,8 @@ public class TestCommand1: Command2 {
         return "first"
     }
 
-    public override func execute() -> CommandOutput2 {
-        return CommandOutput2(basic: ["first executed"])
+    public override func execute() -> CommandOutput {
+        return CommandOutput(basic: ["first executed"])
     }
 }
 
@@ -112,8 +112,8 @@ public class TestCommand2: Command2 {
         return "second"
     }
 
-    public override func execute() -> CommandOutput2 {
-        return CommandOutput2(basic: ["second executed"])
+    public override func execute() -> CommandOutput {
+        return CommandOutput(basic: ["second executed"])
     }
 }
 
@@ -122,7 +122,7 @@ public class TestCommand3: Command2 {
         return "third"
     }
 
-    public override func execute() -> CommandOutput2 {
-        return CommandOutput2(basic: ["third executed"])
+    public override func execute() -> CommandOutput {
+        return CommandOutput(basic: ["third executed"])
     }
 }

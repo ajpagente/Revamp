@@ -31,11 +31,6 @@ public enum CommandOutputType {
     case verbose
 }
 
-// public struct CommandOutput {
-//     public var simple: [String]
-//     public var verbose: [String]
-// }
-
 public enum CommandStatus {
     case success
     case fail
@@ -51,7 +46,7 @@ public enum CommandErrorCode {
     case noError
 }
 
-public struct CommandOutput2 {
+public struct CommandOutput {
     public var status: CommandStatus
     public var errorCode: CommandErrorCode
     public var basic  = [""]
@@ -92,8 +87,8 @@ open class Command2 {
         self.init(input: input)
     }
 
-    open func execute() -> CommandOutput2 {
-        return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+    open func execute() -> CommandOutput {
+        return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
     }
 }
 

@@ -13,10 +13,10 @@ public class CommandEngine {
         self.commandHandler = handler
     }
 
-    public func execute(_ name: String, input: CommandInput) -> CommandOutput2 {
+    public func execute(_ name: String, input: CommandInput) -> CommandOutput {
         guard let command = commandHandler.handleCommand(name, input: input) 
             else {
-                return CommandOutput2(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
         }
 
         return command.execute()
