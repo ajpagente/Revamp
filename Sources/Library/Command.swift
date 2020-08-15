@@ -6,68 +6,6 @@
 
 import Foundation
 
-public struct CommandInput {
-    let subCommand: String
-    let arguments:  [String]
-    let options:    [String:String]
-    let flags:      [String]
-
-    public init(subCommand: String, arguments: [String], 
-                options: [String:String], flags: [String]) {
-        self.subCommand = subCommand
-        self.arguments  = arguments
-        self.options    = options
-        self.flags      = flags 
-    }
-}
-
-public enum CommmandError: Error {
-    case unknownCommand
-    case argumentError
-} 
-
-public enum CommandOutputType {
-    case simple
-    case verbose
-}
-
-public enum CommandStatus {
-    case success
-    case fail
-}
-
-public enum CommandErrorCode {
-    case fileNotFound
-    case invalidArgument
-    case ipaParsingError
-    case profileParsingError
-    case unknownCommand
-    case unknownError
-    case noError
-}
-
-public struct CommandOutput {
-    public var status: CommandStatus
-    public var errorCode: CommandErrorCode
-    public var basic  = [""]
-    public var detail = [""]
-
-    public init(basic: [String]) {
-        self.status    = .success
-        self.errorCode = .noError
-        self.basic     = basic
-    }
-
-    public init(errorCode: CommandErrorCode, basic: [String]) {
-        self.status    = .fail
-        self.errorCode = errorCode
-        self.basic     = basic
-    }
-}
-
-public struct CommandErrorReason {
-    var simple: [String] = []
-}
 
 open class Command {
     open class var assignedName: String {
@@ -90,4 +28,53 @@ open class Command {
     open func execute() -> CommandOutput {
         return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
     }
+}
+
+public struct CommandInput {
+    let subCommand: String
+    let arguments:  [String]
+    let options:    [String:String]
+    let flags:      [String]
+
+    public init(subCommand: String, arguments: [String], 
+                options: [String:String], flags: [String]) {
+        self.subCommand = subCommand
+        self.arguments  = arguments
+        self.options    = options
+        self.flags      = flags 
+    }
+}
+
+public struct CommandOutput {
+    public var status: CommandStatus
+    public var errorCode: CommandErrorCode
+    public var basic  = [""]
+    public var detail = [""]
+
+    public init(basic: [String]) {
+        self.status    = .success
+        self.errorCode = .noError
+        self.basic     = basic
+    }
+
+    public init(errorCode: CommandErrorCode, basic: [String]) {
+        self.status    = .fail
+        self.errorCode = errorCode
+        self.basic     = basic
+    }
+}
+
+public enum CommandStatus {
+    case success
+    case fail
+}
+
+public enum CommandErrorCode {
+    case fileNotFound
+    case invalidArgument
+    case ipaParsingError
+    case profileParsingError
+    case unknownCommand
+    case unknownError
+    case noError
 }
