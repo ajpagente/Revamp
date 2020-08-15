@@ -10,7 +10,7 @@ final class CommandEngineTests: XCTestCase {
     override func setUp() {
         super.setUp()
         handler1 = CommandHandler(commandType: TestCommand1.self)
-        handler2 = CommandHandler(commandType: TestCommand2.self)
+        handler2 = CommandHandler(commandType: TestCommand.self)
         handler3 = CommandHandler(commandType: TestCommand3.self)
     }
 
@@ -97,7 +97,7 @@ final class CommandEngineTests: XCTestCase {
 
 }
 
-public class TestCommand1: Command2 {
+public class TestCommand1: Command {
     public override class var assignedName: String {
         return "first"
     }
@@ -107,7 +107,7 @@ public class TestCommand1: Command2 {
     }
 }
 
-public class TestCommand2: Command2 {
+public class TestCommand: Command {
     public override class var assignedName: String {
         return "second"
     }
@@ -117,7 +117,7 @@ public class TestCommand2: Command2 {
     }
 }
 
-public class TestCommand3: Command2 {
+public class TestCommand3: Command {
     public override class var assignedName: String {
         return "third"
     }

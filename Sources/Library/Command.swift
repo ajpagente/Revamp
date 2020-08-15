@@ -69,7 +69,7 @@ public struct CommandErrorReason {
     var simple: [String] = []
 }
 
-open class Command2 {
+open class Command {
     open class var assignedName: String {
         return "unknown"
     }
@@ -90,16 +90,4 @@ open class Command2 {
     open func execute() -> CommandOutput {
         return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
     }
-}
-
-public protocol Command {
-    func getOutput(_ type: CommandOutputType) -> [String]
-    func getError() -> [String]
-    mutating func execute() -> Bool
-}
-
-public struct UnknownCommand: Command {
-    public func getOutput(_ type: CommandOutputType) -> [String] { return ["Unknown command"] }
-    public func getError() -> [String] { return ["Unknown command"] }
-    public mutating func execute() -> Bool { return false }
 }

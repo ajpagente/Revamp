@@ -8,7 +8,7 @@ import Foundation
 import Files
 
 
-public class ShowCommand: Command2 {
+public class ShowCommand: Command {
     private var basicOutput: [String] = []
     private var groups: [OutputGroup] = []
     private var verbose: Bool {

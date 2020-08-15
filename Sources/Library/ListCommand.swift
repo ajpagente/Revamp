@@ -6,7 +6,7 @@
 
 import Foundation
 
-public class ListCommand: Command2 {
+public class ListCommand: Command {
     public override class var assignedName: String {
         return "list"
     }
