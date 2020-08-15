@@ -29,13 +29,13 @@ struct Revamp: ParsableCommand {
 extension Revamp {
     struct List: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Display available provisioning profiles",
+            abstract: "Display available provisioning profiles.",
             subcommands: [Profile.self])
     }
     
     struct Show: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Display information about an Apple binary",
+            abstract: "Display information about an ipa or provisioning profile.",
             subcommands: [Info.self])
     }
 
@@ -194,7 +194,7 @@ extension Revamp.Show {
 
 fileprivate struct Engine {
     fileprivate static func initialize() -> CommandEngine {
-        let listHandler = CommandHandler(commandType: ListCommand2.self)
+        let listHandler = CommandHandler(commandType: ListCommand.self)
         let showHandler = CommandHandler(commandType: ShowCommand.self)
         listHandler.next = showHandler
         return CommandEngine(handler: listHandler)
