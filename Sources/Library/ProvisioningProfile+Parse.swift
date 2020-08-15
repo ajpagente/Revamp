@@ -7,8 +7,7 @@
 import Foundation
 
 public extension ProvisioningProfile {
-
-    public enum ParserError: Error {
+    enum ParserError: Error {
         case decoderCreationFailed
         case dataCreationFailed
     }

@@ -13,7 +13,7 @@ class RVCMSDecoder {
 
     init?() {
         var decoderRef: CMSDecoder?
-        let osStatus = CMSDecoderCreate(&decoderRef)
+        CMSDecoderCreate(&decoderRef)
         // TODO: Check return value
 
         guard let unwrappedDecoder = decoderRef else {
@@ -23,6 +23,7 @@ class RVCMSDecoder {
         self.decoder = unwrappedDecoder
     }
 
+    @discardableResult
     func updateMessage(with message: NSData) -> Bool {
         let osStatus = CMSDecoderUpdateMessage(decoder, message.bytes, message.length)
         // TODO: Check return value s
@@ -35,6 +36,7 @@ class RVCMSDecoder {
         return false
     }
 
+    @discardableResult
     func finalizeMessage() -> Bool {
         let osStatus = CMSDecoderFinalizeMessage(decoder)
         // TODO: Check return value
@@ -52,7 +54,7 @@ class RVCMSDecoder {
         
         if !isFinalized { return nil }
 
-        let osStatus = CMSDecoderCopyContent(decoder, &content)
+        CMSDecoderCopyContent(decoder, &content)
         // TODO: Check return value
 
         return content as Data?
