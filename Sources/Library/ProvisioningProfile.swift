@@ -7,7 +7,6 @@
 */
 
 import Foundation
-import Files
 
 public struct ProvisioningProfile: Codable {
 
@@ -51,29 +50,4 @@ public struct ProvisioningProfile: Codable {
     }
 
     public var colorize = false
-
-}
-
-public extension ProvisioningProfile {
-    func writeEntitlementsPlist(to filePath: String) throws {
-        let encoder = PropertyListEncoder()
-        encoder.outputFormat = .xml
-        let data = try encoder.encode(entitlements)
-        try data.write(to: URL(fileURLWithPath: filePath))
-    }
-
-}
-
-public extension ProvisioningProfile {
-    func getTranslatedDevices(using file: File) throws -> [String] {
-        let translator = try DeviceTranslator(file: file)
-        if let devices = provisionedDevices {
-            return try translator.translate(devices)
-        }
-        return []
-    }
-}
-
-struct ProvisioningProfiles {
-    var profiles: [ProvisioningProfile] = []
 }
