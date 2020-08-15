@@ -8,6 +8,11 @@ import Foundation
 import Files
 
 public struct ProfileAnalyzer {
+    public static func getNameUUID(from file: File) throws -> String {
+        let profile = try parseProfile(from: file)
+        return "\(profile.UUID)  \(profile.name)"
+    }
+
     public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
         let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
         return Array(groups.prefix(3))
@@ -19,17 +24,27 @@ public struct ProfileAnalyzer {
     
     private static func getInfo(from file: File, colorize: Bool, translationFile: File?) throws -> [OutputGroup] {
         var groups: [OutputGroup] = []
-        let profileURL  = URL(fileURLWithPath: file.path)
-        let data        = try Data(contentsOf: profileURL)
-        let profile     = try ProvisioningProfile.parse(from: data)
+        let profile = try parseProfile(from: file)
  
-        groups.append(try getProfileInfo(from: profile!, colorize: colorize))
-        groups.append(try getEntitlements(from: profile!, colorize: colorize))
-        groups.append(try getCertificates(from: profile!, colorize: colorize))
-        groups.append(try getProvisionedDevices(from: profile!, colorize: colorize, translationFile: translationFile))
+        groups.append(try getProfileInfo(from: profile, colorize: colorize))
+        groups.append(try getEntitlements(from: profile, colorize: colorize))
+        groups.append(try getCertificates(from: profile, colorize: colorize))
+        groups.append(try getProvisionedDevices(from: profile, colorize: colorize, translationFile: translationFile))
 
         let outputGroups = OutputGroups(groups)
         return outputGroups.groups
+    }
+
+    public static func getProfileInfo(from file: File, colorize: Bool = false) throws -> OutputGroup {
+        let profile = try parseProfile(from: file)
+        return try getProfileInfo(from: profile, colorize: colorize)
+    }
+
+    private static func parseProfile(from file: File) throws -> ProvisioningProfile {
+        let profileURL  = file.url //URL(fileURLWithPath: file.path)
+        let data        = try Data(contentsOf: profileURL)
+        let profile     = try ProvisioningProfile.parse(from: data)
+        return profile!
     }
 
     private static func getProfileInfo(from profile: ProvisioningProfile, colorize: Bool = false) throws -> OutputGroup {

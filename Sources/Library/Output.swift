@@ -86,7 +86,6 @@ public struct OutputFormatter {
    
     public func strings(from outputGroup: OutputGroup) -> [String] {
         if outputGroup.maxCount < 1 { return outputGroup.lines }
-
         var lines: [String] = []
         var spacesCountAtBeginning = 0
         if let header = outputGroup.header {

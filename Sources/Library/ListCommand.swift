@@ -5,6 +5,8 @@
 */
 
 import Foundation
+import Files
+
 
 public class ListCommand: Command {
     public override class var assignedName: String {
@@ -24,34 +26,30 @@ public class ListCommand: Command {
 
     private func listProfiles() -> CommandOutput {
         var basicOutput: [String] = []
-        var verbose = false
-        var colorize  = false
-        if input.flags.contains("verbose") { verbose = true }
-        if input.flags.contains("colorize") { colorize = true }
+        let verbose   = input.flags.contains("verbose")
+        let colorize  = input.flags.contains("colorize")
 
-        var profileURL: URL
-        if let path = input.options["path"] {
-            profileURL      = URL(fileURLWithPath: path)
-        } else {
-            let userHomeURL = URL(fileURLWithPath: NSHomeDirectory())
-            profileURL      = userHomeURL.appendingPathComponent("Library/MobileDevice/Provisioning Profiles", isDirectory: true)            
-        }
-        
         do {
-            let urls = try getProfileUrls(at: profileURL)
+            var profileFolder: Folder
+            if let path = input.options["path"] {
+                profileFolder = try Folder(path: path)
+            } else {
+                profileFolder = try Folder.home.subfolder(at: "Library/MobileDevice/Provisioning Profiles")
+            }
+        
+            let files = profileFolder.files
 
-            for url in urls {
-                if let data = try? Data(contentsOf: url) {
-                    if var profile = try ProvisioningProfile.parse(from: data) {
-                        profile.colorize = colorize
-                        if verbose {
-                            basicOutput.append(profile.verboseOutput)
-                            basicOutput.append("\n")
-                        } else {
-                            basicOutput.append(profile.simpleOutput)
-                        }
-                     }
-                }  
+            for file in files {
+                if file.extension == "mobileprovision" {
+                    if verbose {
+                        let infoGroup = try ProfileAnalyzer.getProfileInfo(from: file, colorize: colorize)
+                        basicOutput.append(contentsOf: formatOutput(infoGroup))
+                        basicOutput.append("\n")
+                    } else {
+                        let nameUUID = try ProfileAnalyzer.getNameUUID(from: file)
+                        basicOutput.append(nameUUID)
+                    }                    
+                }
             }
         } catch {
             return CommandOutput(errorCode: .profileParsingError, basic: ["Error when parsing provisioning profiles."])
@@ -60,19 +58,9 @@ public class ListCommand: Command {
         return CommandOutput(basic: basicOutput)
     }
 
-    private func getProfileUrls(at: URL) throws -> [URL] {
-        let fileManager = FileManager.default
-        let urls = try fileManager.contentsOfDirectory(at: at, 
-                                                        includingPropertiesForKeys: [],
-                                                        options: [ .skipsSubdirectoryDescendants,
-                                                                    .skipsHiddenFiles ] )
-        var profileURLs: [URL] = []
-        for url in urls {
-            if url.pathExtension == "mobileprovision" {
-                profileURLs.append(url)
-            }
-        }
-
-        return profileURLs
+    private func formatOutput(_ group: OutputGroup) -> [String] {
+        var formatted:[String] = []
+        let formatter = OutputFormatter()
+        return formatter.strings(from: group)
     }
 }
