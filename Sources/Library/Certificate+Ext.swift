@@ -9,40 +9,39 @@
 import Foundation
 import Security
 
-public extension Certificate {
+
+public extension Certificate {    
+  enum ParseError: Error {
+    case failedToCreateCertificate
+    case failedToCreateTrust
+    case failedToExtractValues
+  }
+  
+  static func parse(from data: Data) throws -> Certificate {
+    let certificate = try getSecCertificate(data: data)
     
-    enum ParseError: Error {
-        case failedToCreateCertificate
-        case failedToCreateTrust
-        case failedToExtractValues
+    var error: Unmanaged<CFError>?
+    let values = SecCertificateCopyValues(certificate, nil, &error)
+    
+    if let error = error {
+      throw error.takeRetainedValue() as Error
     }
     
-    static func parse(from data: Data) throws -> Certificate {
-        let certificate = try getSecCertificate(data: data)
-        
-        var error: Unmanaged<CFError>?
-        let values = SecCertificateCopyValues(certificate, nil, &error)
-        
-        if let error = error {
-            throw error.takeRetainedValue() as Error
-        }
-        
-        guard let valuesDict = values as? [CFString: Any] else {
-            throw ParseError.failedToExtractValues
-        }
-        
-        var commonName: CFString?
-        SecCertificateCopyCommonName(certificate, &commonName)
-        
-        return try Certificate(results: valuesDict, commonName: commonName as String?)
+    guard let valuesDict = values as? [CFString: Any] else {
+      throw ParseError.failedToExtractValues
     }
     
-    private static func getSecCertificate(data: Data) throws -> SecCertificate {
-        guard let certificate = SecCertificateCreateWithData(kCFAllocatorDefault, data as CFData) else {
-            throw ParseError.failedToCreateCertificate
-        }
-        
-        return certificate
+    var commonName: CFString?
+    SecCertificateCopyCommonName(certificate, &commonName)
+    
+    return try Certificate(results: valuesDict, commonName: commonName as String?)
+  }
+  
+  private static func getSecCertificate(data: Data) throws -> SecCertificate {
+    guard let certificate = SecCertificateCreateWithData(kCFAllocatorDefault, data as CFData) else {
+      throw ParseError.failedToCreateCertificate
     }
     
+    return certificate
+  } 
 }
