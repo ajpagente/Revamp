@@ -7,6 +7,7 @@
 import Foundation
 import Files
 
+
 public struct AppAnalyzer {
     public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
         let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
