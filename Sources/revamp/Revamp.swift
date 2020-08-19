@@ -68,7 +68,7 @@ extension Revamp.List {
             let input  = CommandInput(subCommand: "profile", arguments: [], options: options, flags: flags)
             let output = engine.execute("list", input: input)
 
-            for output in output.basic {
+            for output in output.message {
                 print(output)
             }       
         }
@@ -108,7 +108,7 @@ extension Revamp.Show {
             let input  = CommandInput(subCommand: "info", arguments: [file], options: options, flags: flags)
             let output = engine.execute("show", input: input)
 
-            for output in output.basic {
+            for output in output.message {
                 print(output)
             }      
         }

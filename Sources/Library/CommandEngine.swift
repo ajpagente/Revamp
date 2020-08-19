@@ -16,7 +16,7 @@ public class CommandEngine {
     public func execute(_ name: String, input: CommandInput) -> CommandOutput {
         guard let command = commandHandler.handleCommand(name, input: input) 
             else {
-                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
         }
 
         return command.execute()

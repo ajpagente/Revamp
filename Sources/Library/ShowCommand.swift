@@ -39,7 +39,7 @@ public class ShowCommand: Command {
             case "info":
                 return dispatch()
             default:
-                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
         }
     }
 
@@ -52,10 +52,10 @@ public class ShowCommand: Command {
             case "mobileprovision":
                 return getProfileInfo(file)
             default:
-                return CommandOutput(errorCode: .invalidArgument, basic: ["File type not supported."])
+                return CommandOutput(errorCode: .invalidArgument, message: ["File type not supported."])
             }
         } catch {
-            return CommandOutput(errorCode: .invalidArgument, basic: ["File not found or the file is corrupt."])
+            return CommandOutput(errorCode: .invalidArgument, message: ["File not found or the file is corrupt."])
         }
     }
 
@@ -69,10 +69,10 @@ public class ShowCommand: Command {
             basicOutput = formatOutput(groups)
         } catch {
             print("\(error)")
-            return CommandOutput(errorCode: .ipaParsingError, basic: ["Error when parsing ipa."])
+            return CommandOutput(errorCode: .ipaParsingError, message: ["Error when parsing ipa."])
         }
 
-        return CommandOutput(basic: basicOutput)
+        return CommandOutput(message: basicOutput)
     }
 
     private func getProfileInfo(_ file: File) -> CommandOutput {
@@ -85,10 +85,10 @@ public class ShowCommand: Command {
             basicOutput = formatOutput(groups)
         } catch {
             print("\(error)")
-            return CommandOutput(errorCode: .ipaParsingError, basic: ["Error when parsing profile."])
+            return CommandOutput(errorCode: .ipaParsingError, message: ["Error when parsing profile."])
         }
 
-        return CommandOutput(basic: basicOutput)
+        return CommandOutput(message: basicOutput)
     }
 
     private func formatOutput(_ groups: [OutputGroup]) -> [String] {

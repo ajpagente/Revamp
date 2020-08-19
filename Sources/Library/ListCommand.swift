@@ -20,7 +20,7 @@ public class ListCommand: Command {
             case "profile":
                 return listProfiles()
             default:
-                return CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
+                return CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
         }
     }
 
@@ -52,14 +52,13 @@ public class ListCommand: Command {
                 }
             }
         } catch {
-            return CommandOutput(errorCode: .profileParsingError, basic: ["Error when parsing provisioning profiles."])
+            return CommandOutput(errorCode: .profileParsingError, message: ["Error when parsing provisioning profiles."])
         }
 
-        return CommandOutput(basic: basicOutput)
+        return CommandOutput(message: basicOutput)
     }
 
     private func formatOutput(_ group: OutputGroup) -> [String] {
-        var formatted:[String] = []
         let formatter = OutputFormatter()
         return formatter.strings(from: group)
     }

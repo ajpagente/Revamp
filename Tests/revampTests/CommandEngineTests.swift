@@ -19,8 +19,8 @@ final class CommandEngineTests: XCTestCase {
         let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("first", input: input)
 
-        let expected = CommandOutput(basic: ["first executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        let expected = CommandOutput(message: ["first executed"])
+        XCTAssertEqual(actual.message, expected.message)
     }
 
     func testEngineOneHandlerUnknownCommand() throws {
@@ -28,8 +28,8 @@ final class CommandEngineTests: XCTestCase {
         let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         let actual  = engine.execute("abcd", input: input)
 
-        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+        XCTAssertEqual(actual.message, expected.message)
     }
 
     func testEngineTwoHandlers() throws {
@@ -38,12 +38,12 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput(basic: ["first executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        var expected = CommandOutput(message: ["first executed"])
+        XCTAssertEqual(actual.message, expected.message)
 
         actual   = engine.execute("second", input: input)
-        expected = CommandOutput(basic: ["second executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        expected = CommandOutput(message: ["second executed"])
+        XCTAssertEqual(actual.message, expected.message)
     }
 
     func testEngineTwoHandlersUnknownCommand() throws {
@@ -52,8 +52,8 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
         
         let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+        XCTAssertEqual(actual.message, expected.message)
     }
 
     func testEngineThreeHandlers() throws {
@@ -63,16 +63,16 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput(basic: ["first executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        var expected = CommandOutput(message: ["first executed"])
+        XCTAssertEqual(actual.message, expected.message)
 
         actual   = engine.execute("second", input: input)
-        expected = CommandOutput(basic: ["second executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        expected = CommandOutput(message: ["second executed"])
+        XCTAssertEqual(actual.message, expected.message)
 
         actual   = engine.execute("third", input: input)
-        expected = CommandOutput(basic: ["third executed"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        expected = CommandOutput(message: ["third executed"])
+        XCTAssertEqual(actual.message, expected.message)
     }
 
     func testEngineThreeHandlersUnknownCommand() throws {
@@ -82,8 +82,8 @@ final class CommandEngineTests: XCTestCase {
         let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
         let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput(errorCode: .unknownCommand, basic: ["Unknown command"])
-        XCTAssertEqual(actual.basic, expected.basic)
+        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+        XCTAssertEqual(actual.message, expected.message)
     }   
 
     static var allTests = [
@@ -103,7 +103,7 @@ public class TestCommand1: Command {
     }
 
     public override func execute() -> CommandOutput {
-        return CommandOutput(basic: ["first executed"])
+        return CommandOutput(message: ["first executed"])
     }
 }
 
@@ -113,7 +113,7 @@ public class TestCommand: Command {
     }
 
     public override func execute() -> CommandOutput {
-        return CommandOutput(basic: ["second executed"])
+        return CommandOutput(message: ["second executed"])
     }
 }
 
@@ -123,6 +123,6 @@ public class TestCommand3: Command {
     }
 
     public override func execute() -> CommandOutput {
-        return CommandOutput(basic: ["third executed"])
+        return CommandOutput(message: ["third executed"])
     }
 }
