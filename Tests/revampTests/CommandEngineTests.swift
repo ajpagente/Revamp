@@ -1,128 +1,127 @@
 import XCTest
-
 import Library
 
+
 final class CommandEngineTests: XCTestCase {
-    private var handler1: CommandHandler!
-    private var handler2: CommandHandler!
-    private var handler3: CommandHandler!
+  private var handler1: CommandHandler!
+  private var handler2: CommandHandler!
+  private var handler3: CommandHandler!
 
-    override func setUp() {
-        super.setUp()
-        handler1 = CommandHandler(commandType: TestCommand1.self)
-        handler2 = CommandHandler(commandType: TestCommand.self)
-        handler3 = CommandHandler(commandType: TestCommand3.self)
-    }
+  override func setUp() {
+    super.setUp()
+    handler1 = CommandHandler(commandType: TestCommand1.self)
+    handler2 = CommandHandler(commandType: TestCommand.self)
+    handler3 = CommandHandler(commandType: TestCommand3.self)
+  }
 
-    func testEngineOneHandler() throws {
-        let engine  = CommandEngine(handler: handler1)
-        let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
-        let actual  = engine.execute("first", input: input)
+  func testEngineOneHandler() throws {
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
+    let actual = engine.execute("first", input: input)
 
-        let expected = CommandOutput(message: ["first executed"])
-        XCTAssertEqual(actual.message, expected.message)
-    }
+    let expected = CommandOutput(message: ["first executed"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
 
-    func testEngineOneHandlerUnknownCommand() throws {
-        let engine  = CommandEngine(handler: handler1)
-        let input   = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
-        let actual  = engine.execute("abcd", input: input)
+  func testEngineOneHandlerUnknownCommand() throws {
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
+    let actual = engine.execute("abcd", input: input)
 
-        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
-        XCTAssertEqual(actual.message, expected.message)
-    }
+    let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
 
-    func testEngineTwoHandlers() throws {
-        handler1.next = handler2
-        let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
-        
-        var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput(message: ["first executed"])
-        XCTAssertEqual(actual.message, expected.message)
+  func testEngineTwoHandlers() throws {
+    handler1.next = handler2
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
-        actual   = engine.execute("second", input: input)
-        expected = CommandOutput(message: ["second executed"])
-        XCTAssertEqual(actual.message, expected.message)
-    }
+    var actual = engine.execute("first", input: input)
+    var expected = CommandOutput(message: ["first executed"])
+    XCTAssertEqual(actual.message, expected.message)
 
-    func testEngineTwoHandlersUnknownCommand() throws {
-        handler1.next = handler2
-        let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
-        
-        let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
-        XCTAssertEqual(actual.message, expected.message)
-    }
+    actual = engine.execute("second", input: input)
+    expected = CommandOutput(message: ["second executed"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
 
-    func testEngineThreeHandlers() throws {
-        handler1.next = handler2
-        handler2.next = handler3
-        let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
+  func testEngineTwoHandlersUnknownCommand() throws {
+    handler1.next = handler2
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
-        var actual   = engine.execute("first", input: input)
-        var expected = CommandOutput(message: ["first executed"])
-        XCTAssertEqual(actual.message, expected.message)
+    let actual = engine.execute("xyz", input: input)
+    let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
 
-        actual   = engine.execute("second", input: input)
-        expected = CommandOutput(message: ["second executed"])
-        XCTAssertEqual(actual.message, expected.message)
+  func testEngineThreeHandlers() throws {
+    handler1.next = handler2
+    handler2.next = handler3
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
-        actual   = engine.execute("third", input: input)
-        expected = CommandOutput(message: ["third executed"])
-        XCTAssertEqual(actual.message, expected.message)
-    }
+    var actual = engine.execute("first", input: input)
+    var expected = CommandOutput(message: ["first executed"])
+    XCTAssertEqual(actual.message, expected.message)
 
-    func testEngineThreeHandlersUnknownCommand() throws {
-        handler1.next = handler2
-        handler2.next = handler3
-        let engine   = CommandEngine(handler: handler1)
-        let input    = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
+    actual = engine.execute("second", input: input)
+    expected = CommandOutput(message: ["second executed"])
+    XCTAssertEqual(actual.message, expected.message)
 
-        let actual   = engine.execute("xyz", input: input)
-        let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
-        XCTAssertEqual(actual.message, expected.message)
-    }   
+    actual = engine.execute("third", input: input)
+    expected = CommandOutput(message: ["third executed"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
 
-    static var allTests = [
-        ("testEngineOneHandler"                 , testEngineOneHandler),
-        ("testEngineOneHandlerUnknownCommand"   , testEngineOneHandlerUnknownCommand),
-        ("testEngineTwoHandlers"                , testEngineTwoHandlers),
-        ("testEngineTwoHandlersUnknownCommand"  , testEngineTwoHandlersUnknownCommand),
-        ("testEngineThreeHandlers"              , testEngineThreeHandlers),
-        ("testEngineThreeHandlersUnknownCommand", testEngineThreeHandlersUnknownCommand),
-    ]
+  func testEngineThreeHandlersUnknownCommand() throws {
+    handler1.next = handler2
+    handler2.next = handler3
+    let engine = CommandEngine(handler: handler1)
+    let input = CommandInput(subCommand: "", arguments: [], options: [:], flags: [])
 
+    let actual = engine.execute("xyz", input: input)
+    let expected = CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+    XCTAssertEqual(actual.message, expected.message)
+  }
+
+  static var allTests = [
+    ("testEngineOneHandler", testEngineOneHandler),
+    ("testEngineOneHandlerUnknownCommand", testEngineOneHandlerUnknownCommand),
+    ("testEngineTwoHandlers", testEngineTwoHandlers),
+    ("testEngineTwoHandlersUnknownCommand", testEngineTwoHandlersUnknownCommand),
+    ("testEngineThreeHandlers", testEngineThreeHandlers),
+    ("testEngineThreeHandlersUnknownCommand", testEngineThreeHandlersUnknownCommand),
+  ]
 }
 
 public class TestCommand1: Command {
-    public override class var assignedName: String {
-        return "first"
-    }
+  override public class var assignedName: String {
+    return "first"
+  }
 
-    public override func execute() -> CommandOutput {
-        return CommandOutput(message: ["first executed"])
-    }
+  override public func execute() -> CommandOutput {
+    return CommandOutput(message: ["first executed"])
+  }
 }
 
 public class TestCommand: Command {
-    public override class var assignedName: String {
-        return "second"
-    }
+  override public class var assignedName: String {
+    return "second"
+  }
 
-    public override func execute() -> CommandOutput {
-        return CommandOutput(message: ["second executed"])
-    }
+  override public func execute() -> CommandOutput {
+    return CommandOutput(message: ["second executed"])
+  }
 }
 
 public class TestCommand3: Command {
-    public override class var assignedName: String {
-        return "third"
-    }
+  override public class var assignedName: String {
+    return "third"
+  }
 
-    public override func execute() -> CommandOutput {
-        return CommandOutput(message: ["third executed"])
-    }
+  override public func execute() -> CommandOutput {
+    return CommandOutput(message: ["third executed"])
+  }
 }
