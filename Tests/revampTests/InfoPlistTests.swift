@@ -14,7 +14,7 @@ final class InfoPlistTests: XCTestCase {
         folder = try! Folder.home.createSubfolderIfNeeded(withName: ".plistTest")
         try! folder.empty()
 
-        resourcesFolder = try! Folder(path: FileManager.default.currentDirectoryPath).subfolder(at: "Tests/Resources/ex-IPMSSampleApp/Payload/IPMSSampleApp.app")
+        resourcesFolder = try! Folder(path: FileManager.default.currentDirectoryPath).subfolder(at: "Tests/Resources/ex-tiny/Payload/XCConfig Signing.app")
         testPlistFile = try! resourcesFolder.file(named: "Info.plist")
     }
 
@@ -26,14 +26,19 @@ final class InfoPlistTests: XCTestCase {
     func testParse() throws {
         let infoPlist = try InfoPlist.parse(from: testPlistFile)
 
-        XCTAssertEqual(infoPlist.bundleName, "IPMSSampleApp")
-        XCTAssertEqual(infoPlist.bundleVersionShort, "2.0.0")
-        XCTAssertEqual(infoPlist.bundleVersion, "2.0.0")
-        XCTAssertEqual(infoPlist.minOSVersion, "10.0")
-        XCTAssertEqual(infoPlist.getBuildType(), "development")
+        XCTAssertEqual(infoPlist.bundleName, "XCConfig Signing")
+        XCTAssertEqual(infoPlist.bundleVersionShort, "1.0")
+        XCTAssertEqual(infoPlist.bundleVersion, "1")
+        XCTAssertEqual(infoPlist.minOSVersion, "13.2")
+        XCTAssertEqual(infoPlist.getBuildType(), "")
 
-        XCTAssertEqual(infoPlist.platformVersion, "11.2")
-        XCTAssertEqual(infoPlist.sdkName, "iphoneos11.2")
+        XCTAssertEqual(infoPlist.xcodeVersion, "1130")
+        XCTAssertEqual(infoPlist.xcodeBuild, "11C504")
+        XCTAssertEqual(infoPlist.buildSDK, "17B102")
+        XCTAssertEqual(infoPlist.buildMachineOSBuild, "18G3020")
+
+        XCTAssertEqual(infoPlist.platformVersion, "13.2")
+        XCTAssertEqual(infoPlist.sdkName, "iphoneos13.2")
         XCTAssertEqual(infoPlist.supportedPlatforms.count, 1)
         XCTAssertEqual(infoPlist.supportedPlatforms[0], "iPhoneOS")
     }
