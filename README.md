@@ -8,6 +8,9 @@
 ## The Dream
 The current features are stepping stones to eventually developing an application that can smartly sign an iOS and macOS binary that works on macOS and Linux. Other stepping stones has to be built to eventually fulfill the dream. Watch this repository as features will be progressively released.
 
+## Installation
+Copy the `revamp` binary to `/usr/local/bin`. 
+
 ## Getting Help
 Simply type `revamp` from the Terminal to get the preview of all available commands.
 ```
