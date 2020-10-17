@@ -12,7 +12,7 @@ The current features are stepping stones to eventually developing an application
 Copy the `revamp` binary to `/usr/local/bin`. 
 
 ## Getting Help
-Simply type `revamp` from the Terminal to get the preview of all available commands.
+Simply type `revamp` from the Terminal to preview available commands. With the help options provided you can view details of specific commands.
 ```
 OVERVIEW: A program that provides signing artifact discovery and query capabilities.
 
