@@ -12,7 +12,7 @@ struct Revamp: ParsableCommand {
 
     static var configuration = CommandConfiguration(
         abstract: """
-        A program that provides signing artifact discovery and query capabilities.
+        An application for viewing iOS binary and provisioning profile information.
         """,
         subcommands: [List.self, Show.self])
 
@@ -29,13 +29,13 @@ struct Revamp: ParsableCommand {
 extension Revamp {
     struct List: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Display available provisioning profiles.",
+            abstract: "Show available provisioning profiles.",
             subcommands: [Profile.self])
     }
     
     struct Show: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Display information about an ipa or provisioning profile.",
+            abstract: "Show information about an ipa or provisioning profile.",
             subcommands: [Info.self])
     }
 
@@ -77,7 +77,7 @@ extension Revamp.List {
 
 extension Revamp.Show {
     struct Info: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Display information about an Apple binary.")
+        static var configuration = CommandConfiguration(abstract: "Show information about an ipa or provisioning profile.")
 
         @Option(name: [.customLong("translate-device"), .customShort("t")], 
                 help: ArgumentHelp(

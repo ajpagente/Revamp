@@ -59,7 +59,7 @@ public struct ProfileAnalyzer {
 
     private static func getEntitlements(from profile: ProvisioningProfile, colorize: Bool = false) throws -> OutputGroup {
         let entitlements = Entitlements(profile.entitlements)
-        let keys = ["get-task-allow", "com.apple.developer.nfc.readersession.formats",
+        let keys = ["application-identifier", "get-task-allow", "com.apple.developer.nfc.readersession.formats",
                     "aps-environment", ]
         let filtered = entitlements.filterDisplayableEntitlements(with: keys)
         let info = filtered.map { "\($0.key): \($0.value)" }

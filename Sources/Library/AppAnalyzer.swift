@@ -40,9 +40,16 @@ public struct AppAnalyzer {
 
         info.append("App Name: \(infoPlist.bundleName)")
         info.append("Bundle ID: \(infoPlist.bundleIdentifier)")
-        info.append("Bundle Version: \(infoPlist.bundleVersionShort)-\(infoPlist.bundleVersion)")
+        info.append("Bundle Short Version: \(infoPlist.bundleVersionShort)")
+        info.append("Bundle Version: \(infoPlist.bundleVersion)")
         info.append("Min OS Version: \(infoPlist.minOSVersion)")
         info.append("Platform Version: \(infoPlist.platformVersion)")
+
+        // Build information
+        let xcodeVersion = XcodeBuildTranslator.translate(infoPlist.xcodeBuild)
+        info.append("XCode Version: \(xcodeVersion) (\(infoPlist.xcodeBuild))")
+        let macOSVersion = MacOSBuildTranslator.translate(infoPlist.buildMachineOSBuild)
+        info.append("macOS Version: \(macOSVersion) (\(infoPlist.buildMachineOSBuild))")
 
         return OutputGroup(lines: info, header: "App Info", separator: ":")   
     }
