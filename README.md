@@ -14,7 +14,7 @@ Copy the `revamp` binary to `/usr/local/bin`.
 ## Getting Help
 Simply type `revamp` from the Terminal to preview available commands. With the help options provided you can view details of specific commands.
 ```
-OVERVIEW: A program that provides signing artifact discovery and query capabilities.
+OVERVIEW: An application for viewing iOS binary and provisioning profile information.
 
 USAGE: revamp <subcommand>
 
@@ -22,15 +22,13 @@ OPTIONS:
   -h, --help              Show help information.
 
 SUBCOMMANDS:
-  list                    Display available provisioning profiles.
-  show                    Display information about an ipa or provisioning profile.
-
-  See 'revamp help <subcommand>' for detailed help.
+  list                    Show available provisioning profiles.
+  show                    Show information about an ipa or provisioning profile.
 ```
 
-Viewing detailed help via `revamp help <subcommand>`. 
+View detailed help for specific commands via `revamp help <subcommand>`.
 ```
-OVERVIEW: Print available provisioning profiles
+OVERVIEW: Show available provisioning profiles.
 
 USAGE: revamp list <subcommand>
 
@@ -38,8 +36,6 @@ OPTIONS:
   -h, --help              Show help information.
 
 SUBCOMMANDS:
-  profile                 Print provisioning profiles.
-
-  See 'revamp help list <subcommand>' for detailed help.
+  profile                 Enumerate provisioning profiles in the default folder.
 ```
 
