@@ -27,8 +27,11 @@ public struct AppAnalyzer {
         let plistFile = try! appFolders.first!.file(named: "Info.plist")
         let appGroup = try getPlistInfo(from: plistFile, colorize: colorize)  
 
-        let profileFile = try! Folder(path: appFolders.first!.path).file(named: "embedded.mobileprovision")
-        let profileGroup = try getProfileInfo(from: profileFile, colorize: colorize, translationFile: translationFile)
+
+        var profileGroup = [OutputGroup]()
+        if let profileFile = try? Folder(path: appFolders.first!.path).file(named: "embedded.mobileprovision") {
+            profileGroup = try getProfileInfo(from: profileFile, colorize: colorize, translationFile: translationFile)
+        }
 
         let outputGroups = OutputGroups([appGroup] + profileGroup)
         return outputGroups.groups
