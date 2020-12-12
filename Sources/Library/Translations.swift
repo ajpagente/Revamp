@@ -46,7 +46,10 @@ public struct XcodeBuildTranslator: Translator {
 
 public struct MacOSBuildTranslator: Translator {
   static let macOSBuildTranslation = 
-    ["19A583":"Catalina 10.15",
+    ["20B29":"Big Sur 11.0.1",
+     "20B50":"Big Sur 11.0.1",
+     "20C69":"Big Sur 11.1 RC",
+     "19A583":"Catalina 10.15",
      "19A602":"Catalina 10.15",
      "19A603":"Catalina 10.15",
      "19B88":"Catalina 10.15.1",
