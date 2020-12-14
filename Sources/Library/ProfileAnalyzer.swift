@@ -35,9 +35,15 @@ public struct ProfileAnalyzer {
         return outputGroups.groups
     }
 
-    public static func getProfileInfo(from file: File, colorize: Bool = false) throws -> OutputGroup {
+    public static func getProfileInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
+        var fileInfo = [String]()
+        fileInfo.append("File Name: \(file.name)")
+        let fileInfoGroup = OutputGroup(lines: fileInfo, header: "File Info", separator: ":")
+        
         let profile = try parseProfile(from: file)
-        return try getProfileInfo(from: profile, colorize: colorize)
+        let profileInfoGroup = try getProfileInfo(from: profile, colorize: colorize)
+        
+        return [fileInfoGroup, profileInfoGroup]
     }
 
     private static func parseProfile(from file: File) throws -> ProvisioningProfile {

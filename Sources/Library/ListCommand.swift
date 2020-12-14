@@ -42,8 +42,9 @@ public class ListCommand: Command {
             for file in files {
                 if file.extension == "mobileprovision" {
                     if verbose {
-                        let infoGroup = try ProfileAnalyzer.getProfileInfo(from: file, colorize: colorize)
-                        basicOutput.append(contentsOf: formatOutput(infoGroup))
+                        let groups = try ProfileAnalyzer.getProfileInfo(from: file, colorize: colorize)
+                        let outputGroups = OutputGroups(groups)
+                        basicOutput.append(contentsOf: formatOutput(outputGroups.groups))
                         basicOutput.append("\n")
                     } else {
                         let nameUUID = try ProfileAnalyzer.getNameUUID(from: file)
@@ -58,8 +59,12 @@ public class ListCommand: Command {
         return CommandOutput(message: basicOutput)
     }
 
-    private func formatOutput(_ group: OutputGroup) -> [String] {
+    private func formatOutput(_ groups: [OutputGroup]) -> [String] {
+        var formatted:[String] = []
         let formatter = OutputFormatter()
-        return formatter.strings(from: group)
+        for group in groups {
+            formatted.append(contentsOf: formatter.strings(from: group))
+        }
+        return formatted
     }
 }
