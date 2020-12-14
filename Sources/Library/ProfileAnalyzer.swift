@@ -13,6 +13,11 @@ public struct ProfileAnalyzer {
         return "\(profile.UUID)  \(profile.name)"
     }
 
+    public static func getFileNameUUID(from file: File) throws -> String {
+        let profile = try parseProfile(from: file)
+        return "\(profile.UUID)  \(file.name)"
+    }
+
     public static func getLimitedInfo(from file: File, colorize: Bool = false) throws -> [OutputGroup] {
         let groups = try getInfo(from: file, colorize: colorize, translationFile: nil)
         return Array(groups.prefix(3))
@@ -42,7 +47,7 @@ public struct ProfileAnalyzer {
         
         let profile = try parseProfile(from: file)
         let profileInfoGroup = try getProfileInfo(from: profile, colorize: colorize)
-        
+
         return [fileInfoGroup, profileInfoGroup]
     }
 

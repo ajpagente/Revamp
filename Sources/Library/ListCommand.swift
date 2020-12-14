@@ -28,11 +28,13 @@ public class ListCommand: Command {
         var basicOutput: [String] = []
         let verbose   = input.flags.contains("verbose")
         let colorize  = input.flags.contains("colorize")
+        var hasPath = false
 
         do {
             var profileFolder: Folder
             if let path = input.options["path"] {
                 profileFolder = try Folder(path: path)
+                hasPath = true
             } else {
                 profileFolder = try Folder.home.subfolder(at: "Library/MobileDevice/Provisioning Profiles")
             }
@@ -47,8 +49,14 @@ public class ListCommand: Command {
                         basicOutput.append(contentsOf: formatOutput(outputGroups.groups))
                         basicOutput.append("\n")
                     } else {
-                        let nameUUID = try ProfileAnalyzer.getNameUUID(from: file)
-                        basicOutput.append(nameUUID)
+                        var profileInfo: String
+                        
+                        if hasPath {
+                            profileInfo = try ProfileAnalyzer.getFileNameUUID(from: file)
+                        } else {
+                            profileInfo = try ProfileAnalyzer.getNameUUID(from: file)
+                        }
+                        basicOutput.append(profileInfo)
                     }                    
                 }
             }
