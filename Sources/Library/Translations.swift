@@ -37,6 +37,9 @@ public struct XcodeBuildTranslator: Translator {
      "11E801a":"11.7",
      "12A7209":"12.0",
      "12A7300":"12.0.1",
+     "12A7403":"12.1",
+     "12B45b":"12.2",
+     "12C33":"12.3"
     ]
 
   static func translate(_ build: String) -> String {
