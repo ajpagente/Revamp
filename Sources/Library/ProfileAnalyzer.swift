@@ -8,6 +8,11 @@ import Foundation
 import Files
 
 public struct ProfileAnalyzer {
+    public static func getUUID(from file: File) throws -> String {
+        let profile = try parseProfile(from: file)
+        return profile.UUID
+    }
+
     public static func getNameUUID(from file: File) throws -> String {
         let profile = try parseProfile(from: file)
         return "\(profile.UUID)  \(profile.name)"
@@ -52,7 +57,7 @@ public struct ProfileAnalyzer {
     }
 
     private static func parseProfile(from file: File) throws -> ProvisioningProfile {
-        let profileURL  = file.url //URL(fileURLWithPath: file.path)
+        let profileURL  = file.url
         let data        = try Data(contentsOf: profileURL)
         let profile     = try ProvisioningProfile.parse(from: data)
         return profile!

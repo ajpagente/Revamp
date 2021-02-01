@@ -77,7 +77,7 @@ extension Revamp.List {
 
 extension Revamp.Show {
     struct Info: ParsableCommand {
-        static var configuration = CommandConfiguration(abstract: "Show information about an ipa or provisioning profile.")
+        static var configuration = CommandConfiguration(abstract: "Show information about the target. The target could be an ipa, provisioning profile, or profile UUID.")
 
         @Option(name: [.customLong("translate-device"), .customShort("t")], 
                 help: ArgumentHelp(
@@ -85,14 +85,19 @@ extension Revamp.Show {
                     valueName: "path"))
         var deviceTranslationFilePath: String = ""
 
+        @Flag(name: .long, help: "The argument represents a complete or partial profile UUID found in the default location.") 
+        var uuid = false
+
         @OptionGroup()
         var commonFlags: Revamp.Options
 
-        @Argument var file: String
+        @Argument(help: "An ipa, provisioning profile, or profile UUID") var target: String
 
         mutating func validate() throws {
-            if !(file.hasSuffix(".ipa") || file.hasSuffix(".mobileprovision")) {
-                throw ValidationError("A file must be an ipa or a mobileprovision.")
+            if !uuid {
+              if !(target.hasSuffix(".ipa") || target.hasSuffix(".mobileprovision")) {
+                  throw ValidationError("A file must be an ipa or a mobileprovision.")
+              }
             }
         }
 
@@ -103,9 +108,10 @@ extension Revamp.Show {
 
             if commonFlags.verbose  { flags.append("verbose")}
             if commonFlags.colorize { flags.append("colorize") }
+            if uuid { flags.append("uuid") }
             if !deviceTranslationFilePath.isEmpty { options["translation-path"] = deviceTranslationFilePath }
 
-            let input  = CommandInput(subCommand: "info", arguments: [file], options: options, flags: flags)
+            let input  = CommandInput(subCommand: "info", arguments: [target], options: options, flags: flags)
             let output = engine.execute("show", input: input)
 
             for output in output.message {

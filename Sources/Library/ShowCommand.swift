@@ -27,6 +27,9 @@ public class ShowCommand: Command {
         } 
         return nil
     }
+    private var isUUID: Bool {
+        return input.flags.contains("uuid")
+    }
 
     public override class var assignedName: String {
         return "show"
@@ -37,26 +40,78 @@ public class ShowCommand: Command {
 
         switch subCommand {
             case "info":
-                return dispatch()
+                do {
+                    let commandArgument = input.arguments.first!
+                    let split = commandArgument.components(separatedBy: ".")
+                    switch split.last {
+                    case "ipa":
+                        let file = try File(path: input.arguments.first!)
+                        return processIpa(files: [file])
+                    case "mobileprovision":
+                        let file = try File(path: input.arguments.first!)
+                        return processProfile(files: [file])
+                    default:
+                        if isUUID {
+                            do {
+                                let files = try findProfile(from: input.arguments.first!)
+                                return processProfile(files: files)
+                                // TODO: What happens if UUID does not match?
+                            } catch {
+                                return CommandOutput(errorCode: .invalidArgument, message: ["File not found or the file is corrupt."])
+                            }
+
+                        } else {
+                          return CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
+                        }
+                    }
+                } catch {
+                    return CommandOutput(errorCode: .invalidArgument, message: ["File not found or the file is corrupt."])
+                }
+                
             default:
                 return CommandOutput(errorCode: .unknownCommand, message: ["Unknown command"])
         }
     }
 
-    private func dispatch() -> CommandOutput {
+    private func processIpa(files: [File]) -> CommandOutput {
+        return getIpaInfo(files.first!)
+    }
+
+    private func processProfile(files: [File]) -> CommandOutput {
         do {
-            let file = try File(path: input.arguments.first!)
-            switch file.extension {
-            case "ipa":
-                return getIpaInfo(file)
-            case "mobileprovision":
+            if files.count > 1 {
+                var output = [String]()
+                output.append("Multiple profiles found:")
+                for file in files {
+                    output.append(try ProfileAnalyzer.getNameUUID(from: file))
+                }
+                return CommandOutput(message: output)
+            } else {
+                guard let file = files.first else {
+                    return CommandOutput(errorCode: .invalidArgument, message: ["File not found or the file is corrupt."])
+                }
                 return getProfileInfo(file)
-            default:
-                return CommandOutput(errorCode: .invalidArgument, message: ["File type not supported."])
             }
         } catch {
             return CommandOutput(errorCode: .invalidArgument, message: ["File not found or the file is corrupt."])
         }
+        
+    }
+    
+    private func findProfile(from uuid: String) throws -> [File] {
+        var matchingFiles = [File]()
+
+        let profileFolder = try Folder.home.subfolder(at: "Library/MobileDevice/Provisioning Profiles")
+        let files = profileFolder.files
+        for file in files {
+            if file.extension == "mobileprovision" {
+                let uuidFromFile = try ProfileAnalyzer.getUUID(from: file)
+                if uuidFromFile.contains(uuid) {
+                    matchingFiles.append(file)
+                }
+            }             
+        }
+        return matchingFiles
     }
 
     private func getIpaInfo(_ file: File) -> CommandOutput {
