@@ -5,5 +5,5 @@
 */
 
 public struct Version {
-    public static let value = "0.0.7beta"
+    public static let value = "0.0.7"
 }
