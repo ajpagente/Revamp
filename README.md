@@ -11,6 +11,20 @@ The current features are stepping stones to eventually developing an application
 ## Installation
 Copy the `revamp` binary to `/usr/local/bin`. 
 
+## Getting Started
+| Command  |  Description | 
+|---|---|
+| `revamp list profile` |  List profiles in default location | 
+| `revamp list profile -v` |  List profiles in default location with additional details |
+| `revamp list profile -p ~/Downloads`  | List profiles in Downloads folder  |
+| `revamp show info myapp.ipa`  | Show ipa information  |
+| `revamp show info myapp.ipa -v`  | Show detailed ipa information  |
+| `revamp show info profile.mobileprovision`  | Show provisioning profile information  |
+| `revamp show info profile.mobileprovision -v`  | Show detailed provisioning profile information  |
+| `revamp show info profile.mobileprovision -t translation_file -v`  | Show detailed provisioning profile information and translate devices to readable form |
+| `revamp show info --uuid 8112 -v`  | Show detailed information on the profile with UUID containing "8112". Added in v0.0.7 |
+
+
 ## Getting Help
 Simply type `revamp` from the Terminal to preview available commands. With the help options provided you can view details of specific commands.
 ```
