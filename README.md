@@ -11,7 +11,7 @@ The current features are stepping stones to eventually developing an application
 ## Installation
 Copy the `revamp` binary to `/usr/local/bin`. 
 
-## Getting Started
+## Quick Start Guide
 | Command  |  Description | 
 |---|---|
 | `revamp list profile` |  List profiles in default location | 
